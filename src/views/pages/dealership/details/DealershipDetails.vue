@@ -1,30 +1,18 @@
 <template>
-  <v-row justify="center">
-    <v-card elevation="2" width="75%" class="ma-md-10">
-      <v-card-title>Dealership Details</v-card-title>
-      <v-card-actions>
-        <v-btn
-          rounded
-          color="primary"
-          text
-        >
-          Edit details
-        </v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-row>
+  <v-card width="90%" class="mx-auto mt-5">
+    <v-card-title>Details</v-card-title>
+  </v-card>
 </template>
 
 <script>
 export default {
-  name: 'DealershipDetails',
+  name: "DealershipDetails",
 
   data: () => ({
     //
   }),
-}
+};
 </script>
 
 <style>
-
 </style>

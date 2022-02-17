@@ -1,12 +1,6 @@
 <template>
   <div>
-    <v-card
-      height="100%"
-      width="250"
-      class="mx-auto rounded-0"
-      flat
-      dark
-    >
+    <v-card height="100%" class="mx-auto rounded-0" flat dark>
       <v-navigation-drawer app floating v-model="$store.state.sidebarShow">
         <v-list-item class="pt-5 pb-5">
           <v-list-item-content>
@@ -16,19 +10,22 @@
           </v-list-item-content>
         </v-list-item>
 
-        <v-list
-          dense
-          nav
-          rounded
-        >
-          <v-list-item-group v-model="active" active-class="bg-active" color="indigo">
+        <v-list dense nav rounded>
+          <v-list-item-group
+            v-model="active"
+            active-class="bg-active"
+            color="indigo"
+          >
             <v-list-item
               v-for="(item, index) in sidebarItems"
               :key="index"
               :to="item.to"
             >
               <v-list-item-content>
-                <v-list-item-title class="pl-6" v-text="item.title"></v-list-item-title>
+                <v-list-item-title
+                  class="pl-6"
+                  v-text="item.title"
+                ></v-list-item-title>
               </v-list-item-content>
             </v-list-item>
           </v-list-item-group>
@@ -40,43 +37,43 @@
 
 <script>
 export default {
-  name: 'Sidebar',
+  name: "Sidebar",
 
   data: () => ({
     active: 1,
     sidebarItems: [
       {
-        title: 'Dashboard',
-        to: '/dashboard'
+        title: "Dashboard",
+        to: "/dashboard",
       },
       {
-        title: 'Dealership',
-        to: '/dealership'
+        title: "Dealership",
+        to: "/dealership",
       },
       {
-        title: 'Inventory',
-        to: '/inventory'
+        title: "Inventory",
+        to: "/inventory",
       },
       {
-        title: 'Clients',
-        to: '/clients'
+        title: "Clients",
+        to: "/clients",
       },
       {
-        title: 'Transactions',
-        to: '/transactions'
+        title: "Transactions",
+        to: "/transactions",
       },
       {
-        title: 'Lists',
-        to: '/lists'
-      }
-    ]
+        title: "Lists",
+        to: "/lists",
+      },
+    ],
   }),
-}
+};
 </script>
 
 <style>
 .bg-active {
   background-color: rgb(255, 87, 34) !important;
-  color : white !important;
+  color: white !important;
 }
 </style>
