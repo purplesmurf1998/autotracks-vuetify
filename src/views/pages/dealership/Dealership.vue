@@ -6,20 +6,20 @@
         extension-height="50"
         extended
         flat
-        class="px-10"
+        class="top-toolbar"
       >
         <v-toolbar-title>Dealership</v-toolbar-title>
         <v-spacer />
         <v-btn color="primary" text rounded small v-if="activeTab == 0">
-          <v-icon left dark class="mr-2"> mdi-pencil </v-icon>
+          <v-icon left dark> mdi-pencil </v-icon>
           Edit Details
         </v-btn>
         <v-btn color="primary" text rounded small v-if="activeTab == 1">
-          <v-icon left dark class="mr-2"> mdi-plus </v-icon>
+          <v-icon left dark> mdi-plus </v-icon>
           Add Account
         </v-btn>
         <v-btn color="primary" text rounded small v-if="activeTab == 2">
-          <v-icon left dark class="mr-2"> mdi-plus </v-icon>
+          <v-icon left dark> mdi-plus </v-icon>
           Add Property
         </v-btn>
         <v-btn
@@ -30,7 +30,7 @@
           v-if="activeTab == 3"
           @click="addingZone = true"
         >
-          <v-icon left dark class="mr-2"> mdi-plus </v-icon>
+          <v-icon left dark> mdi-plus </v-icon>
           Add Location
         </v-btn>
       </v-toolbar>
@@ -66,7 +66,7 @@
               hide-details
             ></v-text-field>
             <v-spacer />
-            <v-btn color="primary" small rounded>
+            <v-btn color="primary">
               <v-icon left dark class="mr-2"> mdi-pencil </v-icon>
               Edit zone perimeters
             </v-btn>
@@ -119,5 +119,9 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
+.top-toolbar {
+  padding-left: 5%;
+  padding-right: 5%;
+}
 </style>

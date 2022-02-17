@@ -70,7 +70,7 @@
       :center="center"
       :zoom="17"
       ref="mapRef"
-      style="height: 400px"
+      style="height: 500px"
       :options="{
         streetViewControl: false,
         fullscreenControl: true,
