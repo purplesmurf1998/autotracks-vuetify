@@ -1,5 +1,5 @@
 # autotracks-frontend
-Make sure you are running node version 16.x when running `npm install` and `npm run serve` for the application to launch
+Make sure you are running **node version 16.x** when running `npm install` and `npm run serve` for the application to launch
 ## Project setup
 ```
 npm install
