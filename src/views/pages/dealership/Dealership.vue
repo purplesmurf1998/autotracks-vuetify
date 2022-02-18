@@ -36,9 +36,24 @@
       </v-toolbar>
       <v-card width="90%" class="mx-auto" style="margin-top: -49px">
         <v-tabs v-model="activeTab">
+          
           <v-tab> Details </v-tab>
-          <v-tab> Accounts </v-tab>
-          <v-tab> Properties </v-tab>
+          <v-tab>
+            <v-badge
+              content="1"
+              right
+            >
+              Accounts
+            </v-badge>
+          </v-tab>
+          <v-tab> 
+            <v-badge
+              content="1"
+              right
+            >
+              Properties
+            </v-badge>
+          </v-tab>
           <v-tab> Locations </v-tab>
         </v-tabs>
         <v-divider />
@@ -52,7 +67,7 @@
               hide-details
             ></v-text-field>
             <v-spacer />
-            <v-btn color="primary" small rounded>
+            <v-btn color="primary" :class="$vuetify.breakpoint.xs ? 'mt-2' : ''">
               <v-icon left dark class="mr-2"> mdi-pencil </v-icon>
               Edit property order
             </v-btn>
@@ -66,9 +81,13 @@
               hide-details
             ></v-text-field>
             <v-spacer />
-            <v-btn color="primary">
+            <v-btn color="primary" :class="$vuetify.breakpoint.mobile ? 'mt-2' : 'mr-2'">
               <v-icon left dark class="mr-2"> mdi-pencil </v-icon>
               Edit zone perimeters
+            </v-btn>
+            <v-btn color="primary" :class="$vuetify.breakpoint.mobile ? 'mt-2' : 'ml-2'">
+              <v-icon left dark class="mr-2"> mdi-table </v-icon>
+              View list of locations
             </v-btn>
           </v-row>
         </v-card-text>

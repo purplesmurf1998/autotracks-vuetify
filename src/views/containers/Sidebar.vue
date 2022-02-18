@@ -45,26 +45,32 @@ export default {
       {
         title: "Dashboard",
         to: "/dashboard",
+        badge: null
       },
       {
         title: "Dealership",
         to: "/dealership",
+        badge: true
       },
       {
         title: "Inventory",
         to: "/inventory",
+        badge: null
       },
       {
         title: "Clients",
         to: "/clients",
+        badge: null
       },
       {
         title: "Transactions",
         to: "/transactions",
+        badge: null
       },
       {
         title: "Lists",
         to: "/lists",
+        badge: null
       },
     ],
   }),

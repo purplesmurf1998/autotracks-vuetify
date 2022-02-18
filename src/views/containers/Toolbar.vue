@@ -5,6 +5,16 @@
       v-if="!$store.state.sidebarShow"
     ></v-app-bar-nav-icon>
     <v-spacer />
+    <v-badge
+      :value="true"
+      color="primary"
+      content="3"
+      right
+      class="mr-5"
+      overlap
+    >
+      <v-icon> mdi-bell </v-icon> 
+    </v-badge>
     <v-menu offset-y left bottom rounded min-width="100">
       <template v-slot:activator="{ on, attrs }">
         <v-btn text rounded v-bind="attrs" v-on="on" small> Account </v-btn>
