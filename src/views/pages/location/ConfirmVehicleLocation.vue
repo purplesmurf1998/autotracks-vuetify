@@ -8,6 +8,7 @@
               Update Vehicle Position
             </v-card-title>
             <v-card-text class="pt-3">
+              <p>{{ error }}</p>
               <p class="text-lg-h6 font-weight-bold">VIN:</p>
               <p>2C4GM68475R667819</p>
               <p class="text-lg-h6 font-weight-bold">Latitude:</p>
@@ -46,7 +47,8 @@ export default {
     lng: null,
     timestamp: null,
     vehicle: null,
-    dialog: true
+    dialog: true,
+    error: ''
   }),
   methods: {
     getPosition(position) {
@@ -56,7 +58,7 @@ export default {
       this.timestamp = new Date(position.timestamp);
     },
     showError(error) {
-      console.log(error);
+      this.error = error;
     },
     confirmLocation() {
       this.$router.replace({ path: '/inventory' })
@@ -93,11 +95,12 @@ export default {
     //      as well as access to modify this vehicle's location
   },
   mounted() {
+    
     // get the user's device's location
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(this.getPosition, this.showError);
     } else {
-      console.log("The browser does not support geolocation")
+      this.error = "The browser does not support geolocation";
     }
   }
 }
