@@ -2,7 +2,6 @@
   <v-app-bar app color="grey lighten-4" fixed :elevation="0" id="app-bar">
     <v-app-bar-nav-icon
       @click="$store.commit('toggleSidebar')"
-      v-if="!$store.state.sidebarShow"
     ></v-app-bar-nav-icon>
     <v-spacer />
     <v-menu offset-y left bottom rounded min-width="100">

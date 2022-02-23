@@ -8,7 +8,6 @@
               Update Vehicle Position
             </v-card-title>
             <v-card-text class="pt-3">
-              <p>{{ error }}</p>
               <p class="text-lg-h6 font-weight-bold">VIN:</p>
               <p>2C4GM68475R667819</p>
               <p class="text-lg-h6 font-weight-bold">Latitude:</p>
