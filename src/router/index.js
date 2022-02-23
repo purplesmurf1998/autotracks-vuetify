@@ -11,6 +11,7 @@ import Clients from '../views/pages/clients/Clients.vue';
 import Inventory from '../views/pages/inventory/Inventory.vue';
 import Lists from '../views/pages/lists/Lists.vue';
 import Transactions from '../views/pages/transactions/Transactions.vue';
+import ConfirmVehicleLocation from '../views/pages/location/ConfirmVehicleLocation.vue';
 
 Vue.use(VueRouter)
 
@@ -53,6 +54,11 @@ const routes = [
       }
     ]
   },
+  {
+    path: '/confirm-vehicle-location/vehicle/:vehicleId',
+    name: 'ConfirmVehicleLocation',
+    component: ConfirmVehicleLocation
+  }
 ]
 
 const router = new VueRouter({

@@ -59,40 +59,79 @@
           <v-tab> Inventory </v-tab>
           <v-tab> Sold </v-tab>
           <v-tab> Delivered </v-tab>
+          <v-tab> Map </v-tab>
         </v-tabs>
         <v-divider />
         <v-card-text>
-          <v-tabs-items v-model="tabs">
-            <v-tab-item>
-              <v-text-field
-                dense
-                outlined
-                prepend-inner-icon="mdi-magnify"
-                placeholder="Search by serial number, stock number, model etc."
-                hide-details
-              ></v-text-field>
-            </v-tab-item>
-          </v-tabs-items>
+          <v-text-field
+            v-model="search"
+            dense
+            outlined
+            prepend-inner-icon="mdi-magnify"
+            placeholder="Search by serial number, stock number, model etc."
+            hide-details
+          ></v-text-field>
         </v-card-text>
       </v-card>
-      <div style="width: 90%" class="mx-auto">
+      <div style="width: 90%" class="mx-auto" v-if="tabs < 3">
         <v-chip small color="secondary" class="my-5 text-caption" rounded>
-          0 results
+          {{ results }} result(s)
         </v-chip>
       </div>
-      <v-card width="90%" class="mx-auto">
-        <v-data-table :headers="headers"></v-data-table>
+      <v-card width="90%" class="mx-auto" v-if="tabs < 3">
+        <v-data-table 
+          :headers="headers" 
+          :items="items"
+          :search="search"
+          @click:row="setSelectedVehicle" 
+          @pagination="handlePagination"
+          class="row-pointer"
+        ></v-data-table>
+      </v-card>
+      <v-card width="90%" class="mx-auto my-10" v-if="tabs == 3">
+        <GmapMap
+          :center="center"
+          :zoom="zoom"
+          ref="mapRef"
+          style="height: 600px"
+          :options="{
+            streetViewControl: false,
+            fullscreenControl: true,
+            rotateControl: false,
+          }"
+        ></GmapMap>
       </v-card>
     </v-card>
+    <v-dialog v-model="showVehicleDetails" @click:outside="clearSelectedVehicle">
+      <vehicle-details 
+        v-if="showVehicleDetails" 
+        :vehicleId="showVehicleDetails" 
+        :clearSelectedVehicle="clearSelectedVehicle"
+      />
+    </v-dialog>
   </div>
 </template>
 
 <script>
+import VehicleDetails from './VehicleDetails.vue'
+import Vue from 'vue';
+import * as VueGoogleMaps from 'vue2-google-maps';
+
+Vue.use(VueGoogleMaps, {
+  load: {
+    key: 'AIzaSyDnzuP55GknIhhOh5L1pJbpPc5DBkc_2pM',
+  },
+});
+
 export default {
   name: "Inventory",
 
   data: () => ({
     tabs: 0,
+    search: '',
+    results: 0,
+    center: { lat: 45.431311, lng: -73.479005 },
+    zoom: 19,
     headers: [
       {
         text: "VIN",
@@ -111,7 +150,72 @@ export default {
         value: "exterior-color",
       },
     ],
+    inventory: [
+      {
+        '_id': '62157f5977dec1cf15fa88f4',
+        'vin': '2C4GM68475R667819',
+        'model-#': '7FT6SF',
+        'interior-color': 'Black',
+        'exterior-color': 'White',
+        'on-road-since': null,
+        'added-on': Date.now
+      }
+    ],
+    sold: [
+      {
+        '_id': '62157f663cf86d463f9d6cde',
+        'vin': '1FTSX21P05EC23578',
+        'model-#': '7FT6SF',
+        'interior-color': 'Black',
+        'exterior-color': 'Black',
+        'on-road-since': null,
+        'added-on': Date.now
+      },
+      {
+        '_id': '62157f6cae21964d423f7cc4',
+        'vin': 'JH4DA3340HS032394',
+        'model-#': 'F150TX',
+        'interior-color': 'White',
+        'exterior-color': 'White',
+        'on-road-since': null,
+        'added-on': Date.now
+      }
+    ],
+    delivered: [
+
+    ]
   }),
+  methods: {
+    setSelectedVehicle(item) {
+      let query = {};
+
+      query.vehicle = item._id;
+
+      this.$router.replace({ query })
+    },
+    clearSelectedVehicle() {
+      this.$router.replace({ query: {} });
+    },
+    handlePagination(pagination) {
+      this.results = pagination.itemsLength;
+    }
+  },
+  computed: {
+    items() {
+      switch (this.tabs) {
+        case 0: return this.inventory;
+        case 1: return this.sold;
+        case 2: return this.delivered;
+        default: return [];
+      }
+    },
+    showVehicleDetails() {
+      return this.$route.query.vehicle;
+    }
+  },
+  components: {
+    VehicleDetails
+  }
 };
 </script>
 
@@ -119,5 +223,8 @@ export default {
 .top-toolbar {
   padding-left: 5%;
   padding-right: 5%;
+}
+.row-pointer >>> tbody tr :hover {
+  cursor: pointer;
 }
 </style>

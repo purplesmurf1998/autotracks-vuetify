@@ -5,58 +5,44 @@
       v-if="!$store.state.sidebarShow"
     ></v-app-bar-nav-icon>
     <v-spacer />
-    <v-badge
-      :value="true"
-      color="primary"
-      content="3"
-      right
-      class="mr-5"
-      overlap
-    >
-      <v-icon> mdi-bell </v-icon> 
-    </v-badge>
+    <v-menu offset-y left bottom rounded min-width="100">
+      <template v-slot:activator="{ on, attrs }">
+        <v-badge
+          :value="notificationBadge"
+          color="primary"
+          content="3"
+          right
+          class="mr-5"
+          overlap
+        >
+          <v-icon v-bind="attrs" v-on="on" @click="notificationBadge = false"> mdi-bell </v-icon> 
+        </v-badge>
+      </template>
+      <notifications-dropdown />
+    </v-menu>
     <v-menu offset-y left bottom rounded min-width="100">
       <template v-slot:activator="{ on, attrs }">
         <v-btn text rounded v-bind="attrs" v-on="on" small> Account </v-btn>
       </template>
-      <v-card>
-        <v-card-title
-          class="text-md-body-1 d-flex justify-center primary white--text"
-        >
-          Settings
-        </v-card-title>
-        <v-card-text>
-          <v-list dense rounded>
-            <v-list-item class="text-center text-sm-body-2" dense>
-              <v-list-item-title>Account Details</v-list-item-title>
-            </v-list-item>
-            <v-list-item
-              @click="logout"
-              class="text-center text-sm-body-2"
-              dense
-            >
-              <v-list-item-title>Logout</v-list-item-title>
-            </v-list-item>
-          </v-list>
-        </v-card-text>
-      </v-card>
+      <settings-dropdown />
     </v-menu>
-    <!-- <v-divider class="mx-4" inset vertical /> -->
   </v-app-bar>
 </template>
 
 <script>
+import SettingsDropdown from './SettingsDropdown.vue'
+import NotificationsDropdown from './NotificationsDropdown.vue'
+
 export default {
   name: "Toolbar",
 
   data: () => ({
-    //
+    notificationBadge: true
   }),
-  methods: {
-    logout() {
-      console.log("Logout");
-    },
-  },
+  components: {
+    SettingsDropdown,
+    NotificationsDropdown
+  }
 };
 </script>
 
