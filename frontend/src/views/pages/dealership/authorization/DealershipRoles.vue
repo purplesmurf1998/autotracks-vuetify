@@ -37,6 +37,33 @@
           <v-chip small color="secondary" close>read</v-chip>
         </v-row>
         <v-divider class="my-4" />
+        <v-row class="ma-0" align="center">
+          <p class="text-h5 mr-2 font-weight-light mb-0">Locations</p>
+          <v-btn x-small fab color="primary"><v-icon> mdi-plus </v-icon></v-btn>
+          <v-spacer></v-spacer>
+          <v-chip small color="secondary" close>read</v-chip>
+        </v-row>
+        <v-divider class="my-4" />
+        <v-row class="ma-0" align="center">
+          <p class="text-h5 mr-2 font-weight-light mb-0">Dealerships</p>
+          <v-btn x-small fab color="primary"><v-icon> mdi-plus </v-icon></v-btn>
+          <v-spacer></v-spacer>
+          <v-chip small color="secondary" close>read</v-chip>
+        </v-row>
+        <v-divider class="my-4" />
+        <v-row class="ma-0" align="center">
+          <p class="text-h5 mr-2 font-weight-light mb-0">Vehicle Lists</p>
+          <v-btn x-small fab color="primary"><v-icon> mdi-plus </v-icon></v-btn>
+          <v-spacer></v-spacer>
+          <v-chip small color="secondary" close>read</v-chip>
+        </v-row>
+        <v-divider class="my-4" />
+        <v-row class="ma-0" align="center">
+          <p class="text-h5 mr-2 font-weight-light mb-0">Vehicle Sale</p>
+          <v-btn x-small fab color="primary"><v-icon> mdi-plus </v-icon></v-btn>
+          <v-spacer></v-spacer>
+          <v-chip small color="secondary" close>read</v-chip>
+        </v-row>
       </v-col>
     </v-row>
   </div>
