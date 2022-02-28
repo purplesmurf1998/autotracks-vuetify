@@ -1,6 +1,10 @@
 <template>
   <v-card width="90%" class="mx-auto mt-5">
-    <v-card-title> Accounts </v-card-title>
+    <v-card-title>
+      <v-toolbar flat>
+        <v-toolbar-title>Accounts</v-toolbar-title>
+      </v-toolbar>
+    </v-card-title>
     <v-data-table
       :headers="headers"
       :items="accounts"

@@ -5,7 +5,7 @@
         <toolbar />
         <sidebar />
         <v-fade-transition>
-          <router-view :key="$route.path"/>
+          <router-view :key="$route.path" />
         </v-fade-transition>
       </v-main>
     </v-app>
@@ -13,18 +13,17 @@
 </template>
 
 <script>
-import Sidebar from './Sidebar.vue'
-import Toolbar from './Toolbar.vue'
+import Sidebar from "./Sidebar.vue";
+import Toolbar from "./Toolbar.vue";
 
 export default {
-  name: 'Container',
+  name: "Container",
   components: {
     Sidebar,
-    Toolbar
-  }
-}
+    Toolbar,
+  },
+};
 </script>
 
 <style>
-
 </style>

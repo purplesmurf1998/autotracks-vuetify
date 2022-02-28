@@ -33,31 +33,36 @@
           <v-icon left dark> mdi-plus </v-icon>
           Add Location
         </v-btn>
+        <v-btn color="primary" text rounded small v-if="activeTab == 4">
+          <v-icon left dark> mdi-plus </v-icon>
+          Add Account Role
+        </v-btn>
       </v-toolbar>
       <v-card width="90%" class="mx-auto" style="margin-top: -49px">
         <v-tabs v-model="activeTab">
-          
           <v-tab> Details </v-tab>
           <v-tab>
-            <v-badge
-              content="1"
-              right
-            >
-              Accounts
-            </v-badge>
+            <v-badge content="1" right> Accounts </v-badge>
           </v-tab>
-          <v-tab> 
-            <v-badge
-              content="1"
-              right
-            >
-              Properties
-            </v-badge>
+          <v-tab>
+            <v-badge content="1" right> Properties </v-badge>
           </v-tab>
           <v-tab> Locations </v-tab>
+          <v-tab> Roles and Permissions </v-tab>
         </v-tabs>
         <v-divider />
         <v-card-text>
+          <!-- Accounts Sub Header -->
+          <v-row v-if="activeTab == 1" class="pa-2" align="center">
+            <v-text-field
+              dense
+              outlined
+              prepend-inner-icon="mdi-magnify"
+              placeholder="Search account by first name, last name, email, etc."
+              hide-details
+            ></v-text-field>
+          </v-row>
+          <!-- Properties Sub Header -->
           <v-row v-if="activeTab == 2" class="pa-2" align="center">
             <v-text-field
               dense
@@ -67,11 +72,15 @@
               hide-details
             ></v-text-field>
             <v-spacer />
-            <v-btn color="primary" :class="$vuetify.breakpoint.xs ? 'mt-2' : ''">
+            <v-btn
+              color="primary"
+              :class="$vuetify.breakpoint.xs ? 'mt-2' : ''"
+            >
               <v-icon left dark class="mr-2"> mdi-pencil </v-icon>
               Edit property order
             </v-btn>
           </v-row>
+          <!-- Locations Sub Header -->
           <v-row v-if="activeTab == 3" class="pa-2" align="center">
             <v-text-field
               dense
@@ -81,14 +90,30 @@
               hide-details
             ></v-text-field>
             <v-spacer />
-            <v-btn color="primary" :class="$vuetify.breakpoint.mobile ? 'mt-2' : 'mr-2'">
+            <v-btn
+              color="primary"
+              :class="$vuetify.breakpoint.mobile ? 'mt-2' : 'mr-2'"
+            >
               <v-icon left dark class="mr-2"> mdi-pencil </v-icon>
               Edit zone perimeters
             </v-btn>
-            <v-btn color="primary" :class="$vuetify.breakpoint.mobile ? 'mt-2' : 'ml-2'">
+            <v-btn
+              color="primary"
+              :class="$vuetify.breakpoint.mobile ? 'mt-2' : 'ml-2'"
+            >
               <v-icon left dark class="mr-2"> mdi-table </v-icon>
               View list of locations
             </v-btn>
+          </v-row>
+          <!-- Roles and Permissions Sub Header -->
+          <v-row v-if="activeTab == 4" class="pa-2" align="center">
+            <p class="mb-0">5 / 5 roles created for this account plan</p>
+            <v-spacer />
+            <v-btn
+              color="primary"
+              :class="$vuetify.breakpoint.mobile ? 'mt-2' : 'ml-2'"
+              >Upgrade Plan</v-btn
+            >
           </v-row>
         </v-card-text>
       </v-card>
@@ -106,6 +131,7 @@
         }
       "
     />
+    <dealership-roles id="dealership-roles" v-if="activeTab == 4" />
   </div>
 </template>
 
@@ -114,6 +140,7 @@ import DealershipDetails from "./details/DealershipDetails.vue";
 import DealershipAccounts from "./accounts/DealershipAccounts.vue";
 import DealershipProperties from "./properties/DealershipProperties.vue";
 import DealershipZones from "./zones/DealershipZones.vue";
+import DealershipRoles from "./authorization/DealershipRoles.vue";
 
 export default {
   name: "Dealership",
@@ -129,11 +156,15 @@ export default {
       this.activeTab = value;
     },
   },
+  mounted() {
+    this.setActiveTab(4);
+  },
   components: {
     DealershipDetails,
     DealershipAccounts,
     DealershipProperties,
     DealershipZones,
+    DealershipRoles,
   },
 };
 </script>

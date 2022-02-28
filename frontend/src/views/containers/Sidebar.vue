@@ -32,10 +32,13 @@
         </v-list>
       </v-navigation-drawer>
     </v-card>
+    <introduction-one :value="true" />
   </div>
 </template>
 
 <script>
+import IntroductionOne from "../../components/IntroductionOne.vue";
+
 export default {
   name: "Sidebar",
 
@@ -45,35 +48,38 @@ export default {
       {
         title: "Dashboard",
         to: "/dashboard",
-        badge: null
+        badge: null,
       },
       {
         title: "Dealership",
         to: "/dealership",
-        badge: true
+        badge: true,
       },
       {
         title: "Inventory",
         to: "/inventory",
-        badge: null
+        badge: null,
       },
       {
         title: "Clients",
         to: "/clients",
-        badge: null
+        badge: null,
       },
       {
         title: "Transactions",
         to: "/transactions",
-        badge: null
+        badge: null,
       },
       {
         title: "Lists",
         to: "/lists",
-        badge: null
+        badge: null,
       },
     ],
   }),
+  components: {
+    IntroductionOne,
+  },
 };
 </script>
 

@@ -12,6 +12,8 @@ import Inventory from '../views/pages/inventory/Inventory.vue';
 import Lists from '../views/pages/lists/Lists.vue';
 import Transactions from '../views/pages/transactions/Transactions.vue';
 import ConfirmVehicleLocation from '../views/pages/location/ConfirmVehicleLocation.vue';
+// import auth pages
+import Login from '../views/pages/authentication/Login.vue';
 
 Vue.use(VueRouter)
 
@@ -53,6 +55,11 @@ const routes = [
         component: Transactions
       }
     ]
+  },
+  {
+    path: '/login',
+    name: 'Login',
+    component: Login
   },
   {
     path: '/confirm-vehicle-location/vehicle/:vehicleId',

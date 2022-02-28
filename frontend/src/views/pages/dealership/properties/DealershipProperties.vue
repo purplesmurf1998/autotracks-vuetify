@@ -24,10 +24,25 @@
       :options="{ sortBy: ['position'] }"
     >
       <template v-slot:[`item.actions`]="{ item }">
-        <v-icon small class="mr-2" @click="editItem(item)"> mdi-pencil </v-icon>
-        <v-icon small color="error" @click="deleteItem(item)">
+        <v-icon small class="mr-2" @click="editItem(item)" v-if="item.editable">
+          mdi-pencil
+        </v-icon>
+        <v-icon
+          small
+          color="error"
+          @click="deleteItem(item)"
+          v-if="item.removable"
+        >
           mdi-delete
         </v-icon>
+      </template>
+      <template v-slot:[`item.visible`]="{ item }">
+        <v-chip color="primary" v-if="item.visible" small>Visible</v-chip>
+        <v-chip color="secondary" v-if="!item.visible" small>Hidden</v-chip>
+      </template>
+      <template v-slot:[`item.required`]="{ item }">
+        <v-chip color="primary" v-if="item.required" small>Required</v-chip>
+        <v-chip color="secondary" v-if="!item.required" small>Optional</v-chip>
       </template>
     </v-data-table>
   </v-card>
@@ -52,6 +67,8 @@ export default {
         required: true,
         options: [],
         position: 2,
+        removable: true,
+        editable: true,
       },
       {
         _id: "1",
@@ -62,6 +79,8 @@ export default {
         required: true,
         options: [],
         position: 3,
+        removable: true,
+        editable: true,
       },
       {
         _id: "2",
@@ -72,6 +91,20 @@ export default {
         required: true,
         options: [],
         position: 4,
+        removable: true,
+        editable: true,
+      },
+      {
+        _id: "3",
+        label: "On Road Since",
+        text: "on-road-since",
+        inputType: "Date",
+        visible: false,
+        required: false,
+        options: [],
+        position: 5,
+        removable: false,
+        editable: true,
       },
     ],
     headers: [
