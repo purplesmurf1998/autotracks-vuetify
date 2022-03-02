@@ -4,9 +4,7 @@
       <v-main>
         <toolbar />
         <sidebar />
-        <v-fade-transition>
-          <router-view :key="$route.path" />
-        </v-fade-transition>
+        <router-view :key="$route.path" />
       </v-main>
     </v-app>
   </div>

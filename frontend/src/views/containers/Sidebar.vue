@@ -32,7 +32,7 @@
         </v-list>
       </v-navigation-drawer>
     </v-card>
-    <introduction-one :value="true" />
+    <introduction-one :value="false" />
   </div>
 </template>
 

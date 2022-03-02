@@ -14,7 +14,9 @@
           class="mr-5"
           overlap
         >
-          <v-icon v-bind="attrs" v-on="on" @click="notificationBadge = false"> mdi-bell </v-icon> 
+          <v-icon v-bind="attrs" v-on="on" @click="notificationBadge = false">
+            mdi-bell
+          </v-icon>
         </v-badge>
       </template>
       <notifications-dropdown />
@@ -29,19 +31,19 @@
 </template>
 
 <script>
-import SettingsDropdown from './SettingsDropdown.vue'
-import NotificationsDropdown from './NotificationsDropdown.vue'
+import SettingsDropdown from "./SettingsDropdown.vue";
+import NotificationsDropdown from "./NotificationsDropdown.vue";
 
 export default {
   name: "Toolbar",
 
   data: () => ({
-    notificationBadge: true
+    notificationBadge: true,
   }),
   components: {
     SettingsDropdown,
-    NotificationsDropdown
-  }
+    NotificationsDropdown,
+  },
 };
 </script>
 

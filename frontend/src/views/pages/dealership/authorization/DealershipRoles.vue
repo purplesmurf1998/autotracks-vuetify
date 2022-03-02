@@ -2,13 +2,9 @@
   <div>
     <v-row class="mx-auto" style="width: 90%">
       <v-col class="pl-0 mt-5">
+        <p class="text-h5 font-weight-light">Account Roles</p>
         <v-card>
-          <v-card-title>
-            <v-toolbar flat>
-              <v-toolbar-title>Dealership Roles</v-toolbar-title>
-            </v-toolbar>
-          </v-card-title>
-          <v-list>
+          <v-list class="pa-0">
             <v-list-item-group v-model="selectedRole" color="primary">
               <v-list-item v-for="(role, i) in roles" :key="i">
                 <v-list-item-content>
@@ -20,7 +16,70 @@
         </v-card>
       </v-col>
       <v-col class="pr-0 mt-5">
-        <v-row class="ma-0" align="center">
+        <p class="text-h5 font-weight-light">Permissions</p>
+        <v-row class="ma-0">
+          <v-col>
+            <v-switch
+              :value="true"
+              inset
+              color="primary"
+              class="ma-0 pa-0"
+              label="Create Account"
+            />
+            <v-switch
+              :value="true"
+              inset
+              color="primary"
+              class="ma-0 pa-0"
+              label="Edit Account"
+            />
+            <v-switch
+              :value="true"
+              inset
+              color="primary"
+              class="ma-0 pa-0"
+              label="View Account"
+            />
+            <v-switch
+              :value="true"
+              inset
+              color="primary"
+              class="ma-0 pa-0"
+              label="Delete Account"
+            />
+          </v-col>
+          <v-col>
+            <v-switch
+              :value="true"
+              inset
+              color="primary"
+              class="ma-0 pa-0"
+              label="Create Vehicle"
+            />
+            <v-switch
+              :value="true"
+              inset
+              color="primary"
+              class="ma-0 pa-0"
+              label="Edit Vehicle"
+            />
+            <v-switch
+              :value="true"
+              inset
+              color="primary"
+              class="ma-0 pa-0"
+              label="View Vehicle"
+            />
+            <v-switch
+              :value="true"
+              inset
+              color="primary"
+              class="ma-0 pa-0"
+              label="Delete Vehicle"
+            />
+          </v-col>
+        </v-row>
+        <!-- <v-row class="ma-0" align="center">
           <p class="text-h5 mr-2 font-weight-light mb-0">Vehicles</p>
           <v-btn x-small fab color="primary"><v-icon> mdi-plus </v-icon></v-btn>
           <v-spacer></v-spacer>
@@ -63,7 +122,7 @@
           <v-btn x-small fab color="primary"><v-icon> mdi-plus </v-icon></v-btn>
           <v-spacer></v-spacer>
           <v-chip small color="secondary" close>read</v-chip>
-        </v-row>
+        </v-row> -->
       </v-col>
     </v-row>
   </div>

@@ -12,33 +12,40 @@
                 Login in to your favorite management console
               </p>
             </v-row>
+            <v-alert
+              v-if="errorMessage"
+              color="error"
+              outlined
+              dense
+              text
+              min-width="500"
+              max-width="500"
+              class="mx-auto"
+              >{{ errorMessage }}</v-alert
+            >
             <v-card min-width="500" max-width="500" class="mx-auto pa-2">
-              <v-card-text>
-                <v-text-field
-                  label="Email"
-                  outlined
-                  v-model="email"
-                  autofocus
-                  autocomplete="off"
-                />
-                <v-text-field
-                  label="Password"
-                  type="password"
-                  outlined
-                  v-model="password"
-                  hide-details
-                  autocomplete="off"
-                />
-              </v-card-text>
-              <v-divider></v-divider>
-              <v-card-actions>
-                <v-btn color="primary" rounded> Login </v-btn>
-                <v-spacer />
-                <p class="text-caption mb-0">
-                  Forgot your password?
-                  <router-link to="dashboard">Click here</router-link>
-                </p>
-              </v-card-actions>
+              <form @submit.prevent="login">
+                <v-card-text>
+                  <v-text-field label="Email" outlined v-model="email" dense />
+                  <v-text-field
+                    label="Password"
+                    type="password"
+                    outlined
+                    v-model="password"
+                    hide-details
+                    dense
+                  />
+                </v-card-text>
+                <v-divider></v-divider>
+                <v-card-actions>
+                  <v-btn color="primary" rounded type="submit"> Login </v-btn>
+                  <v-spacer />
+                  <p class="text-caption mb-0">
+                    Don't have an account?
+                    <router-link to="register">Register here</router-link>
+                  </p>
+                </v-card-actions>
+              </form>
             </v-card>
           </v-col>
         </v-container>
@@ -54,8 +61,29 @@ export default {
   data: () => ({
     email: "",
     password: "",
-    autofill: false,
+    errorMessage: null,
   }),
+  methods: {
+    async login() {
+      const payload = {
+        email: this.email,
+        password: this.password,
+      };
+
+      const res = await this.$store.dispatch("login", payload);
+      if (res.success) {
+        this.$router.push("/dashboard");
+      } else {
+        this.showError(res.message);
+      }
+    },
+    showError(message) {
+      this.errorMessage = message;
+      setTimeout(() => {
+        this.errorMessage = null;
+      }, 4000);
+    },
+  },
 };
 </script>
 

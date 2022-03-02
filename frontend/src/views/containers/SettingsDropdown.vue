@@ -1,8 +1,6 @@
 <template>
   <v-card>
-    <v-card-title
-      class="text-md-body-1 d-flex justify-center"
-    >
+    <v-card-title class="text-md-body-1 d-flex justify-center">
       Settings
     </v-card-title>
     <v-list dense rounded>
@@ -15,7 +13,7 @@
             <v-list-item-title v-text="'Account Settings'"></v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        <v-list-item>
+        <v-list-item @click="logout">
           <v-list-item-icon>
             <v-icon v-text="'mdi-logout'"></v-icon>
           </v-list-item-icon>
@@ -30,14 +28,19 @@
 
 <script>
 export default {
-  name: 'SettingsDropdown',
+  name: "SettingsDropdown",
 
   data: () => ({
     //
-  })
-}
+  }),
+  methods: {
+    async logout() {
+      await this.$store.dispatch("logout");
+      this.$router.push("/login");
+    },
+  },
+};
 </script>
 
 <style>
-
 </style>
