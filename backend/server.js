@@ -35,7 +35,7 @@ const app = express();
 app.disable('x-powered-by');
 
 // connect to mongoose
-mongoose.connect(process.env.MONGODB_URL_PROD,
+mongoose.connect(process.env.NODE_ENV == 'development' ? process.env.MONGODB_URL_DEV : process.env.MONGODB_URL_PROD,
   {
     useNewUrlParser: true,
     useUnifiedTopology: true,
