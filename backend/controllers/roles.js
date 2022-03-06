@@ -1,13 +1,10 @@
-const Dealerships = require('../tables/Dealerships');
 const Roles = require('../tables/Roles');
-const Permissions = require('../tables/Permissions');
 const ErrorResponse = require('../utils/errorResponse');
 const asyncHandler = require('../middleware/async');
-const advancedFilter = require('../utils/advancedFilter');
 
 // @desc    Get roles for a specific dealership
 // @route   GET /api/v1/roles
-// @access  Public
+// @access  Protected
 exports.getRoles = asyncHandler(async (req, res, next) => {
   const dealershipId = req.query.dealership;
 
@@ -17,15 +14,7 @@ exports.getRoles = asyncHandler(async (req, res, next) => {
     );
   }
 
-  let roles = {};
-  const permissions = await Permissions.find().populate({
-    path: 'subject',
-    match: { dealership: dealershipId }
-  });
-
-  permissions.forEach(permission => {
-    roles[permission.subject.title][permission.object] = permission.permissions;
-  })
+  const roles = await Roles.find({ dealership: dealershipId });
 
   // send response
   res.status(201).json({
@@ -33,3 +22,40 @@ exports.getRoles = asyncHandler(async (req, res, next) => {
     payload: roles
   });
 })
+
+// @desc    Update a role
+// @route   PUT /api/v1/roles/:roleId
+// @access  Protected
+exports.updateRole = asyncHandler(async (req, res, next) => {
+  const role = await Roles.findByIdAndUpdate(req.params.roleId, req.body, {
+    new: true,
+    runValidators: true
+  })
+
+  // if no role is returned, role was not found and send an error response
+  if (!role) {
+    return next(
+      new ErrorResponse(`Role with id: ${req.params.roleId} not found.`, 404)
+    );
+  }
+
+  // send response
+  res.status(201).json({
+    success: true,
+    payload: role
+  });
+})
+
+// @desc    Delete a specific role
+// @route   DELETE /api/v1/roles/:roleId
+// @access  Authenticated
+exports.deleteRole = asyncHandler(async (req, res, next) => {
+  // find the role with the id provided in the request params and delete
+  await Roles.findByIdAndDelete(req.params.roleId);
+
+  // send response
+  res.status(200).json({
+    success: true,
+    payload: {}
+  });
+});

@@ -1,7 +1,6 @@
 const Dealerships = require('../tables/Dealerships');
 const Users = require('../tables/Users');
 const Roles = require('../tables/Roles');
-const Permissions = require('../tables/Permissions');
 const ErrorResponse = require('../utils/errorResponse');
 const asyncHandler = require('../middleware/async');
 const advancedFilter = require('../utils/advancedFilter');
@@ -10,7 +9,7 @@ const advancedFilter = require('../utils/advancedFilter');
 // @route   POST /api/v1/dealerships
 // @access  Public
 exports.createDealership = asyncHandler(async (req, res, next) => {
-  console.log(req.body);
+  
   const ownerId = req.body.owner;
 
   if (!ownerId) {
@@ -34,108 +33,364 @@ exports.createDealership = asyncHandler(async (req, res, next) => {
 
   // create default roles and permissions for the dealership
   // default roles: Administration, Management, Sales Rep, Sales Rep +, Reception
-  // default permissions
-  // Administration
-  //   - (vehicle, [create, read, update, delete])
-  //   - (location, [create, read, update, delete])
-  //   - (account, [create, read, update, delete])
-  //   - (vehicle_list, [create, read, update, delete])
-  //   - (vehicle_property, [create, read, update, delete])
-  //   - (vehicle_sale, [create, read, update, delete])
-  //   - (dealership, [read, update])
-  // Management
-  //   - (vehicle, [create, read, update, delete])
-  //   - (location, [read])
-  //   - (account, [create, read, update])
-  //   - (vehicle_list, [create, read, update, delete])
-  //   - (vehicle_property, [read, update])
-  //   - (vehicle_sale, [read, update, approve])
-  //   - (dealership, [read])
-  // Sales Rep
-  //   - (vehicle, [read, update])
-  //   - (location, [])
-  //   - (account, [])
-  //   - (vehicle_list, [create, read, update, delete])
-  //   - (vehicle_property, [])
-  //   - (vehicle_sale, [create, read, update, delete])
-  //   - (dealership, [])
-  // Sales Rep +
-  //   - (vehicle, [read, update])
-  //   - (location, [read])
-  //   - (account, [])
-  //   - (vehicle_list, [create, read, update, delete])
-  //   - (vehicle_property, [read, update])
-  //   - (vehicle_sale, [create, read, update, delete])
-  //   - (dealership, [read])
-  // Reception
-  // - (vehicle, [create, read, update, delete])
-  // - (location, [])
-  // - (account, [read])
-  // - (vehicle_list, [])
-  // - (vehicle_property, [read])
-  // - (vehicle_sale, [])
-  // - (dealership, [read])
 
-  const roles = {
-    'Administration': {
-      vehicle: ['create', 'read', 'update', 'delete'],
-      location: ['create', 'read', 'update', 'delete'],
-      account: ['create', 'read', 'update', 'delete'],
-      vehicle_list: ['create', 'read', 'update', 'delete'],
-      vehicle_property: ['create', 'read', 'update', 'delete'],
-      vehicle_sale: ['create', 'read', 'update', 'delete'],
-      dealership: ['read', 'update']
-    },
-    'Management': {
-      vehicle: ['create', 'read', 'update', 'delete'],
-      location: ['read'],
-      account: ['create', 'read', 'update'],
-      vehicle_list: ['create', 'read', 'update', 'delete'],
-      vehicle_property: ['read', 'update'],
-      vehicle_sale: ['read', 'update', 'approve'],
-      dealership: ['read']
-    },
-    'Sales Rep': {
-      vehicle: ['read', 'update'],
-      location: [],
-      account: [],
-      vehicle_list: ['create', 'read', 'update', 'delete'],
-      vehicle_property: [],
-      vehicle_sale: ['create', 'read', 'update', 'delete'],
-      dealership: []
-    },
-    'Sales Rep +': {
-      vehicle: ['read', 'update'],
-      location: ['read'],
-      account: [],
-      vehicle_list: ['create', 'read', 'update', 'delete'],
-      vehicle_property: ['read', 'update'],
-      vehicle_sale: ['create', 'read', 'update', 'delete'],
-      dealership: ['read']
-    },
-    'Reception': {
-      vehicle: ['create', 'read', 'update', 'delete'],
-      location: [],
-      account: ['read'],
-      vehicle_list: [],
-      vehicle_property: ['read'],
-      vehicle_sale: [],
-      dealership: ['read']
-    }
-  }
+  console.log(dealership);
 
-  for (const [role, permissions] of Object.entries(roles)) {
-    const created_role = await Roles.create({
+  const temp_roles = [
+    {
+      dealership: dealership._id.toString(),
+      title: 'Administration',
+      permissions: [
+        {
+          resource: 'vehicle',
+          policy: {
+            create: true,
+            read: true,
+            update: true,
+            delete: true
+          }
+        },
+        {
+          resource: 'location',
+          policy: {
+            create: true,
+            read: true,
+            update: true,
+            delete: true
+          }
+        },
+        {
+          resource: 'account',
+          policy: {
+            create: true,
+            read: true,
+            update: true,
+            delete: true
+          }
+        },
+        {
+          resource: 'vehicle_list',
+          policy: {
+            create: true,
+            read: true,
+            update: true,
+            delete: true
+          }
+        },
+        {
+          resource: 'vehicle_property',
+          policy: {
+            create: true,
+            read: true,
+            update: true,
+            delete: true
+          }
+        },
+        {
+          resource: 'vehicle_sale',
+          policy: {
+            create: true,
+            read: true,
+            update: true,
+            delete: true,
+            approve: true
+          }
+        },
+        {
+          resource: 'dealership',
+          policy: {
+            create: false,
+            read: true,
+            update: true,
+            delete: false
+          }
+        }
+      ]
+    },
+    {
       dealership: dealership._id,
-      title: role
-    });
-    for (const [permission, rights] of Object.entries(permissions)) {
-      await Permissions.create({
-        subject: created_role._id,
-        object: permission,
-        permissions: rights
-      })
+      title: 'Management',
+      permissions: [
+        {
+          resource: 'vehicle',
+          policy: {
+            create: true,
+            read: true,
+            update: true,
+            delete: true
+          }
+        },
+        {
+          resource: 'location',
+          policy: {
+            create: false,
+            read: true,
+            update: false,
+            delete: false
+          }
+        },
+        {
+          resource: 'account',
+          policy: {
+            create: true,
+            read: true,
+            update: true,
+            delete: false
+          }
+        },
+        {
+          resource: 'vehicle_list',
+          policy: {
+            create: true,
+            read: true,
+            update: true,
+            delete: true
+          }
+        },
+        {
+          resource: 'vehicle_property',
+          policy: {
+            create: false,
+            read: true,
+            update: true,
+            delete: false
+          }
+        },
+        {
+          resource: 'vehicle_sale',
+          policy: {
+            create: false,
+            read: true,
+            update: true,
+            delete: false,
+            approve: true
+          }
+        },
+        {
+          resource: 'dealership',
+          policy: {
+            create: false,
+            read: true,
+            update: false,
+            delete: false
+          }
+        }
+      ]
+    },
+    {
+      dealership: dealership._id,
+      title: 'Sales Rep',
+      permissions: [
+        {
+          resource: 'vehicle',
+          policy: {
+            create: false,
+            read: true,
+            update: true,
+            delete: false
+          }
+        },
+        {
+          resource: 'location',
+          policy: {
+            create: false,
+            read: false,
+            update: false,
+            delete: false
+          }
+        },
+        {
+          resource: 'account',
+          policy: {
+            create: false,
+            read: false,
+            update: false,
+            delete: false
+          }
+        },
+        {
+          resource: 'vehicle_list',
+          policy: {
+            create: true,
+            read: true,
+            update: true,
+            delete: true
+          }
+        },
+        {
+          resource: 'vehicle_property',
+          policy: {
+            create: false,
+            read: false,
+            update: false,
+            delete: false
+          }
+        },
+        {
+          resource: 'vehicle_sale',
+          policy: {
+            create: true,
+            read: true,
+            update: true,
+            delete: true,
+            approve: false
+          }
+        },
+        {
+          resource: 'dealership',
+          policy: {
+            create: false,
+            read: false,
+            update: false,
+            delete: false
+          }
+        }
+      ]
+    },
+    {
+      dealership: dealership._id,
+      title: 'Sales Rep +',
+      permissions: [
+        {
+          resource: 'vehicle',
+          policy: {
+            create: false,
+            read: true,
+            update: true,
+            delete: false
+          }
+        },
+        {
+          resource: 'location',
+          policy: {
+            create: false,
+            read: true,
+            update: false,
+            delete: false
+          }
+        },
+        {
+          resource: 'account',
+          policy: {
+            create: false,
+            read: false,
+            update: false,
+            delete: false
+          }
+        },
+        {
+          resource: 'vehicle_list',
+          policy: {
+            create: true,
+            read: true,
+            update: true,
+            delete: true
+          }
+        },
+        {
+          resource: 'vehicle_property',
+          policy: {
+            create: false,
+            read: true,
+            update: true,
+            delete: false
+          }
+        },
+        {
+          resource: 'vehicle_sale',
+          policy: {
+            create: true,
+            read: true,
+            update: true,
+            delete: true,
+            approve: false
+          }
+        },
+        {
+          resource: 'dealership',
+          policy: {
+            create: false,
+            read: true,
+            update: false,
+            delete: false
+          }
+        }
+      ]
+    },
+    {
+      dealership: dealership._id,
+      title: 'Reception',
+      permissions:[
+        {
+          resource: 'vehicle',
+          policy: {
+            create: true,
+            read: true,
+            update: true,
+            delete: true
+          }
+        },
+        {
+          resource: 'location',
+          policy: {
+            create: false,
+            read: false,
+            update: false,
+            delete: false
+          }
+        },
+        {
+          resource: 'account',
+          policy: {
+            create: false,
+            read: true,
+            update: false,
+            delete: false
+          }
+        },
+        {
+          resource: 'vehicle_list',
+          policy: {
+            create: false,
+            read: false,
+            update: false,
+            delete: false
+          }
+        },
+        {
+          resource: 'vehicle_property',
+          policy: {
+            create: false,
+            read: true,
+            update: false,
+            delete: false
+          }
+        },
+        {
+          resource: 'vehicle_sale',
+          policy: {
+            create: false,
+            read: false,
+            update: false,
+            delete: false
+          }
+        },
+        {
+          resource: 'dealership',
+          policy: {
+            create: false,
+            read: true,
+            update: false,
+            delete: false
+          }
+        }
+      ]
     }
+  ];
+
+  for (let i = 0; i < temp_roles.length; i++) {
+    const new_role = await Roles.create(temp_roles[i]);
+    console.log(new_role);
   }
 
   // send response

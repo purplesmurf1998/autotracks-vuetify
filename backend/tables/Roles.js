@@ -10,6 +10,10 @@ const RoleSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Title required.']
   },
+  permissions: {
+    type: [Object],
+    default: []
+  },
   modified_at: {
     type: Date,
     default: Date.now

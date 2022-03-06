@@ -35,10 +35,10 @@ const app = express();
 app.disable('x-powered-by');
 
 // connect to mongoose
-mongoose.connect(process.env.MONGODB_URL,
+mongoose.connect(process.env.MONGODB_URL_PROD,
   {
     useNewUrlParser: true,
-    useUnifiedTopology: true
+    useUnifiedTopology: true,
   }
 );
 
