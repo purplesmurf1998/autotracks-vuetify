@@ -21,11 +21,19 @@
             <v-alert color="error" v-if="errorMessage">{{
               errorMessage
             }}</v-alert>
+            <v-row justify="center">
+              <v-progress-circular
+                indeterminate
+                color="primary"
+                v-if="loading"
+                class="mx-auto"
+              ></v-progress-circular>
+            </v-row>
             <v-card
               min-width="500"
               max-width="500"
               class="mx-auto pa-2"
-              v-show="step == 1"
+              v-show="step == 1 && !loading"
             >
               <v-form
                 ref="accountForm"
@@ -109,7 +117,7 @@
               min-width="500"
               max-width="500"
               class="mx-auto pa-2"
-              v-show="step == 2"
+              v-show="step == 2 && !loading"
             >
               <v-form
                 ref="dealershipForm"
@@ -183,7 +191,7 @@
               min-width="500"
               max-width="500"
               class="mx-auto pa-2"
-              v-show="step == 3"
+              v-show="step == 3 && !loading"
             >
               <v-card-text>
                 <p class="text-h6 font-weight-regular login-text">
@@ -238,7 +246,7 @@
               </v-card-actions>
             </v-card>
           </v-col>
-          <v-container>
+          <v-container v-if="!loading">
             <v-progress-linear
               :value="progress"
               color="primary"
@@ -262,6 +270,7 @@ export default {
     accountFormValid: true,
     dealershipFormValid: true,
     errorMessage: null,
+    loading: false,
     // account form rules
     firstNameRules: [(v) => !!v || "First name is required"],
     lastNameRules: [(v) => !!v || "Last name is required"],
@@ -304,6 +313,7 @@ export default {
       this.step = this.step - 1;
     },
     geocodeDealership() {
+      this.loading = true;
       axios({
         method: "POST",
         url: "http://localhost:5000/api/v1/utilities/geocode",
@@ -321,9 +331,14 @@ export default {
           this.lng = this.geocodedAddress.longitude;
           this.loading = false;
           this.step = this.step + 1;
+          this.loading = false;
         })
         .catch((error) => {
+          this.loading = false;
           console.log(error);
+        })
+        .then(() => {
+          this.loading = false;
         });
     },
     validateAccountForm() {
