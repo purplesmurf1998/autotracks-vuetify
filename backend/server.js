@@ -19,6 +19,7 @@ const authRoutes = require('./routes/authentication');
 const utilsRoutes = require('./routes/utilities');
 const userRoutes = require('./routes/users');
 const dealershipRoutes = require('./routes/dealerships');
+const roleRoutes = require('./routes/roles');
 
 // load in environment variables from config.env
 // this lets us access env. variables by using proccess.env.[VARIABLE_NAME]
@@ -52,6 +53,7 @@ app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/utilities', utilsRoutes);
 app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/dealerships', dealershipRoutes);
+app.use('/api/v1/roles', roleRoutes);
 
 // mount error handler middleware
 app.use(errorHandler);

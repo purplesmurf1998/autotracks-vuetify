@@ -25,13 +25,10 @@ const PermissionSchema = new mongoose.Schema({
       'create',
       'read',
       'update',
-      'delete'
+      'delete',
+      'approve'
     ]
   },
-  ownership: {
-    type: Boolean,
-    default: false
-  }
 });
 
 module.exports = mongoose.model("Permissions", PermissionSchema);

@@ -1,5 +1,7 @@
 const Dealerships = require('../tables/Dealerships');
 const Users = require('../tables/Users');
+const Roles = require('../tables/Roles');
+const Permissions = require('../tables/Permissions');
 const ErrorResponse = require('../utils/errorResponse');
 const asyncHandler = require('../middleware/async');
 const advancedFilter = require('../utils/advancedFilter');
@@ -29,6 +31,112 @@ exports.createDealership = asyncHandler(async (req, res, next) => {
 
   // create new dealership with the data passed in the request body
   const dealership = await Dealerships.create(req.body);
+
+  // create default roles and permissions for the dealership
+  // default roles: Administration, Management, Sales Rep, Sales Rep +, Reception
+  // default permissions
+  // Administration
+  //   - (vehicle, [create, read, update, delete])
+  //   - (location, [create, read, update, delete])
+  //   - (account, [create, read, update, delete])
+  //   - (vehicle_list, [create, read, update, delete])
+  //   - (vehicle_property, [create, read, update, delete])
+  //   - (vehicle_sale, [create, read, update, delete])
+  //   - (dealership, [read, update])
+  // Management
+  //   - (vehicle, [create, read, update, delete])
+  //   - (location, [read])
+  //   - (account, [create, read, update])
+  //   - (vehicle_list, [create, read, update, delete])
+  //   - (vehicle_property, [read, update])
+  //   - (vehicle_sale, [read, update, approve])
+  //   - (dealership, [read])
+  // Sales Rep
+  //   - (vehicle, [read, update])
+  //   - (location, [])
+  //   - (account, [])
+  //   - (vehicle_list, [create, read, update, delete])
+  //   - (vehicle_property, [])
+  //   - (vehicle_sale, [create, read, update, delete])
+  //   - (dealership, [])
+  // Sales Rep +
+  //   - (vehicle, [read, update])
+  //   - (location, [read])
+  //   - (account, [])
+  //   - (vehicle_list, [create, read, update, delete])
+  //   - (vehicle_property, [read, update])
+  //   - (vehicle_sale, [create, read, update, delete])
+  //   - (dealership, [read])
+  // Reception
+  // - (vehicle, [create, read, update, delete])
+  // - (location, [])
+  // - (account, [read])
+  // - (vehicle_list, [])
+  // - (vehicle_property, [read])
+  // - (vehicle_sale, [])
+  // - (dealership, [read])
+
+  const roles = {
+    'Administration': {
+      vehicle: ['create', 'read', 'update', 'delete'],
+      location: ['create', 'read', 'update', 'delete'],
+      account: ['create', 'read', 'update', 'delete'],
+      vehicle_list: ['create', 'read', 'update', 'delete'],
+      vehicle_property: ['create', 'read', 'update', 'delete'],
+      vehicle_sale: ['create', 'read', 'update', 'delete'],
+      dealership: ['read', 'update']
+    },
+    'Management': {
+      vehicle: ['create', 'read', 'update', 'delete'],
+      location: ['read'],
+      account: ['create', 'read', 'update'],
+      vehicle_list: ['create', 'read', 'update', 'delete'],
+      vehicle_property: ['read', 'update'],
+      vehicle_sale: ['read', 'update', 'approve'],
+      dealership: ['read']
+    },
+    'Sales Rep': {
+      vehicle: ['read', 'update'],
+      location: [],
+      account: [],
+      vehicle_list: ['create', 'read', 'update', 'delete'],
+      vehicle_property: [],
+      vehicle_sale: ['create', 'read', 'update', 'delete'],
+      dealership: []
+    },
+    'Sales Rep +': {
+      vehicle: ['read', 'update'],
+      location: ['read'],
+      account: [],
+      vehicle_list: ['create', 'read', 'update', 'delete'],
+      vehicle_property: ['read', 'update'],
+      vehicle_sale: ['create', 'read', 'update', 'delete'],
+      dealership: ['read']
+    },
+    'Reception': {
+      vehicle: ['create', 'read', 'update', 'delete'],
+      location: [],
+      account: ['read'],
+      vehicle_list: [],
+      vehicle_property: ['read'],
+      vehicle_sale: [],
+      dealership: ['read']
+    }
+  }
+
+  for (const [role, permissions] of Object.entries(roles)) {
+    const created_role = await Roles.create({
+      dealership: dealership._id,
+      title: role
+    });
+    for (const [permission, rights] of Object.entries(permissions)) {
+      await Permissions.create({
+        subject: created_role._id,
+        object: permission,
+        permissions: rights
+      })
+    }
+  }
 
   // send response
   res.status(201).json({

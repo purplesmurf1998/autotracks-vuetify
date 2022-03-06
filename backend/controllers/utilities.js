@@ -15,8 +15,9 @@ const geocoder = NodeGeocoder(geocoderOptions);
 exports.geocodeAddress = asyncHandler(async (req, res, next) => {
 
   let address = req.body.street + " " + req.body.city + ", " + req.body.provinceState + " " + req.body.country;
-
+  console.log('Starting geocoding...');
   const geocodedAddress = await geocoder.geocode(address);
+  console.log('Finished geocoding');
 
   res.status(201).json({
     success: true,
