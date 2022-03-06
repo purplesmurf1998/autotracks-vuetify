@@ -107,7 +107,7 @@
           </v-row>
           <!-- Roles and Permissions Sub Header -->
           <v-row v-if="activeTab == 4" class="pa-2" align="center">
-            <p class="mb-0">5 / 5 roles created for this account plan</p>
+            <p class="mb-0">{{ roleCount }} / 5 roles created for this account plan</p>
             <v-spacer />
             <v-btn
               color="primary"
@@ -131,7 +131,7 @@
         }
       "
     />
-    <dealership-roles id="dealership-roles" v-if="activeTab == 4" />
+    <dealership-roles id="dealership-roles" @set-role-count="setRoleCount" v-if="activeTab == 4" />
   </div>
 </template>
 
@@ -150,11 +150,15 @@ export default {
     addingAccount: false,
     addingProperty: false,
     addingZone: false,
+    roleCount: 0
   }),
   methods: {
     setActiveTab(value) {
       this.activeTab = value;
     },
+    setRoleCount(value) {
+      this.roleCount = value;
+    }
   },
   mounted() {
     this.setActiveTab(4);

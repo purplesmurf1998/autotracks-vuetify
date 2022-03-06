@@ -9,7 +9,7 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     sidebarShow: true,
-    baseApiUrl: "http://localhost:5000/api/v1",
+    baseApiUrl: "https://autotracks-api.azurewebsites.net/api/v1",
     loggedInUser: null,
     token: null
   },
