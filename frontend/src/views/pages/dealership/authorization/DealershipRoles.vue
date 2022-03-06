@@ -224,6 +224,7 @@ export default {
           dealership: dealershipId 
         } 
       }).then(response => {
+        console.log(response);
         this.roles = response.data.payload;
         this.selectedRole = this.roles[0];
         this.setSelectedRolePermissions();
