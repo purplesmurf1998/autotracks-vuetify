@@ -3,6 +3,7 @@ const router = express.Router();
 
 // get the methods from the authenticationController
 const {
+  createRole,
   getRoles,
   updateRole,
   deleteRole
@@ -10,7 +11,8 @@ const {
 
 // attach methods to the proper routes
 router.route('/')
-  .get(getRoles);
+  .get(getRoles)
+  .post(createRole);
 
 router.route('/:roleId')
   .put(updateRole)

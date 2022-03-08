@@ -33,7 +33,14 @@
           <v-icon left dark> mdi-plus </v-icon>
           Add Location
         </v-btn>
-        <v-btn color="primary" text rounded small v-if="activeTab == 4" @click="addingRole = true">
+        <v-btn
+          color="primary"
+          text
+          rounded
+          small
+          v-if="activeTab == 4"
+          @click="addingRole = true"
+        >
           <v-icon left dark> mdi-plus </v-icon>
           Add Account Role
         </v-btn>
@@ -109,7 +116,9 @@
           </v-row>
           <!-- Roles and Permissions Sub Header -->
           <v-row v-if="activeTab == 4" class="pa-2" align="center">
-            <p class="mb-0">{{ roleCount }} / 5 roles created for this account plan</p>
+            <p class="mb-0">
+              {{ roleCount }} / 5 roles created for this account plan
+            </p>
             <v-spacer />
             <v-btn
               color="primary"
@@ -133,9 +142,19 @@
         }
       "
     />
-    <dealership-roles id="dealership-roles" @set-role-count="setRoleCount" v-if="activeTab == 4" />
+    <dealership-roles
+      id="dealership-roles"
+      ref="dealershipRoles"
+      @set-role-count="setRoleCount"
+      v-if="activeTab == 4"
+    />
     <v-dialog max-width="400" v-model="addingRole">
-      <add-dealership-role v-if="addingRole" @cancel="addingRole = false" :roleCount="roleCount"/>
+      <add-dealership-role
+        v-if="addingRole"
+        @cancel="addingRole = false"
+        @role-created="roleCreated"
+        :roleCount="roleCount"
+      />
     </v-dialog>
   </div>
 </template>
@@ -157,7 +176,7 @@ export default {
     addingProperty: false,
     addingZone: false,
     addingRole: false,
-    roleCount: 0
+    roleCount: 0,
   }),
   methods: {
     setActiveTab(value) {
@@ -165,10 +184,15 @@ export default {
     },
     setRoleCount(value) {
       this.roleCount = value;
-    }
-  },
-  mounted() {
-    this.setActiveTab(4);
+    },
+    roleCreated(role) {
+      this.addingRole = false;
+      this.$refs.dealershipRoles.showMessage(
+        "success",
+        `Role '${role.title}' successfully created.`
+      );
+      this.$refs.dealershipRoles.fetchRoles();
+    },
   },
   components: {
     DealershipDetails,
@@ -176,7 +200,7 @@ export default {
     DealershipProperties,
     DealershipZones,
     DealershipRoles,
-    AddDealershipRole
+    AddDealershipRole,
   },
 };
 </script>
