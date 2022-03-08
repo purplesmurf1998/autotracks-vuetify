@@ -23,7 +23,9 @@ const roleRoutes = require('./routes/roles');
 
 // load in environment variables from config.env
 // this lets us access env. variables by using proccess.env.[VARIABLE_NAME]
-dotenv.config({ path: './config/config.env' });
+if (process.env.NODE_ENV != 'production') {
+  dotenv.config({ path: './config/config.env' });
+}
 
 // set up PORT number from env. variables, 5000 by default
 const PORT = process.env.PORT || 5000;
@@ -43,7 +45,9 @@ mongoose.connect(process.env.NODE_ENV == 'development' ? process.env.MONGODB_URL
 );
 
 // apply CORS to routes
-app.use(cors());
+app.use(cors({
+  origin: '*'
+}));
 
 // needed to be able to parse request body
 app.use(express.json());
