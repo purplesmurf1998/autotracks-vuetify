@@ -33,7 +33,7 @@
           <v-icon left dark> mdi-plus </v-icon>
           Add Location
         </v-btn>
-        <v-btn color="primary" text rounded small v-if="activeTab == 4">
+        <v-btn color="primary" text rounded small v-if="activeTab == 4" @click="addingRole = true">
           <v-icon left dark> mdi-plus </v-icon>
           Add Account Role
         </v-btn>
@@ -82,13 +82,15 @@
           </v-row>
           <!-- Locations Sub Header -->
           <v-row v-if="activeTab == 3" class="pa-2" align="center">
-            <v-text-field
+            <v-autocomplete
+              :items="['Main Parking Lot', 'Secondary Parking Lot']"
+              hide-selected
               dense
               outlined
               prepend-inner-icon="mdi-magnify"
               placeholder="Search location name"
               hide-details
-            ></v-text-field>
+            ></v-autocomplete>
             <v-spacer />
             <v-btn
               color="primary"
@@ -132,6 +134,9 @@
       "
     />
     <dealership-roles id="dealership-roles" @set-role-count="setRoleCount" v-if="activeTab == 4" />
+    <v-dialog max-width="400" v-model="addingRole">
+      <add-dealership-role v-if="addingRole" @cancel="addingRole = false" :roleCount="roleCount"/>
+    </v-dialog>
   </div>
 </template>
 
@@ -141,6 +146,7 @@ import DealershipAccounts from "./accounts/DealershipAccounts.vue";
 import DealershipProperties from "./properties/DealershipProperties.vue";
 import DealershipZones from "./zones/DealershipZones.vue";
 import DealershipRoles from "./authorization/DealershipRoles.vue";
+import AddDealershipRole from "./authorization/AddDealershipRole.vue";
 
 export default {
   name: "Dealership",
@@ -150,6 +156,7 @@ export default {
     addingAccount: false,
     addingProperty: false,
     addingZone: false,
+    addingRole: false,
     roleCount: 0
   }),
   methods: {
@@ -169,6 +176,7 @@ export default {
     DealershipProperties,
     DealershipZones,
     DealershipRoles,
+    AddDealershipRole
   },
 };
 </script>
