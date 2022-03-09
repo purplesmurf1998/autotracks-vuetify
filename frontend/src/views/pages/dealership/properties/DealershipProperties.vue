@@ -55,6 +55,14 @@
         </template>
       </v-data-table>
     </v-card>
+    <v-dialog max-width="500" v-model="editingProperty">
+      <edit-dealership-property
+        v-if="editingProperty"
+        :property="editProperty"
+        @cancel="editingProperty = false"
+        @property-updated="propertyUpdated"
+      />
+    </v-dialog>
   </div>
 </template>
 
@@ -62,6 +70,7 @@
 const axios = require("axios");
 
 import DeleteDialog from "../../../../components/DeleteDialog.vue";
+import EditDealershipProperty from "./EditDealershipProperty.vue"
 
 export default {
   name: "DealershipProperties",
@@ -74,6 +83,8 @@ export default {
     editedIndex: -1,
     deleteDialog: false,
     deleteItemId: null,
+    editProperty: null,
+    editingProperty: false,
     messageType: null,
     message: null,
     properties: [],
@@ -116,8 +127,15 @@ export default {
     ],
   }),
   methods: {
+    propertyUpdated() {
+      this.editingProperty = false;
+      this.editProperty = null;
+      this.showMessage("success", "Vehicle property updated successfully.");
+      this.fetchProperties();
+    },
     editItem(item) {
-      console.log(item);
+      this.editProperty = item;
+      this.editingProperty = true;
     },
     deleteItem(item) {
       this.deleteItemId = item._id;
@@ -168,6 +186,7 @@ export default {
   },
   components: {
     DeleteDialog,
+    EditDealershipProperty
   },
 };
 </script>
