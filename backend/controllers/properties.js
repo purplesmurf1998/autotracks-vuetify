@@ -15,16 +15,16 @@ exports.getProperties = asyncHandler(async (req, res, next) => {
     );
   }
 
-  let query = Properties.find({ dealership: dealershipId });
-  // sort results
-  if (req.query.sort) {
-    const sortBy = req.query.sort.split(',').join(' ');
-    query = query.sort(sortBy);
-  } else {
-    query = query.sort('position');
-  }
-  // run query
-  const properties = await query;
+  let properties = await Properties.find({ dealership: dealershipId });
+  // sort results manually since MongoDB on Azure doesn't do it natively with mongoose
+  properties.sort((el_1, el_2) => {
+    if (el_1.position < el_2.position)
+      return -1;
+    else if (el_1.position > el_2.position)
+      return 1;
+    else
+      return 0;
+  });
 
   res.status(200).json({
     success: true,
