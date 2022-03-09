@@ -10,25 +10,39 @@
       >
         <v-toolbar-title>Vehicles</v-toolbar-title>
         <v-spacer />
-        <v-btn color="primary" text rounded small v-if="!$vuetify.breakpoint.mobile">
+        <v-btn
+          color="primary"
+          text
+          rounded
+          small
+          v-if="!$vuetify.breakpoint.mobile"
+        >
           <v-icon left dark class="mr-2"> mdi-table-column </v-icon>
           Edit Columns
         </v-btn>
-        <v-btn color="primary" text rounded small v-if="!$vuetify.breakpoint.mobile">
+        <v-btn
+          color="primary"
+          text
+          rounded
+          small
+          v-if="!$vuetify.breakpoint.mobile"
+        >
           <v-icon left dark class="mr-2"> mdi-plus </v-icon>
           Add Vehicle
         </v-btn>
-        <v-btn color="primary" text rounded small v-if="!$vuetify.breakpoint.mobile">
+        <v-btn
+          color="primary"
+          text
+          rounded
+          small
+          v-if="!$vuetify.breakpoint.mobile"
+        >
           <v-icon left dark> mdi-download-outline </v-icon>
           Export
         </v-btn>
         <v-menu bottom left v-if="$vuetify.breakpoint.mobile">
           <template v-slot:activator="{ on, attrs }">
-            <v-btn
-              icon
-              v-bind="attrs"
-              v-on="on"
-            >
+            <v-btn icon v-bind="attrs" v-on="on">
               <v-icon>mdi-view-headline</v-icon>
             </v-btn>
           </template>
@@ -63,27 +77,37 @@
         </v-tabs>
         <v-divider />
         <v-card-text>
-          <v-text-field
-            v-model="search"
-            dense
-            outlined
-            prepend-inner-icon="mdi-magnify"
-            placeholder="Search by serial number, stock number, model etc."
-            hide-details
-          ></v-text-field>
+          <v-row class="ma-0" align="center">
+            <v-text-field
+              v-model="search"
+              dense
+              outlined
+              prepend-inner-icon="mdi-magnify"
+              placeholder="Search by serial number, stock number, model etc."
+              hide-details
+            ></v-text-field>
+            <v-spacer />
+            <v-btn color="primary" small>
+              <v-icon left class="mr-2"> mdi-plus </v-icon>
+              Add Filter
+            </v-btn>
+          </v-row>
         </v-card-text>
       </v-card>
       <div style="width: 90%" class="mx-auto" v-if="tabs < 3">
-        <v-chip small color="secondary" class="my-5 text-caption" rounded>
+        <v-chip small color="primary" class="my-5 text-caption" rounded>
           {{ results }} result(s)
+        </v-chip>
+        <v-chip small color="secondary" class="my-5 ml-3 text-caption" rounded>
+          No filters
         </v-chip>
       </div>
       <v-card width="90%" class="mx-auto" v-if="tabs < 3">
-        <v-data-table 
-          :headers="headers" 
+        <v-data-table
+          :headers="headers"
           :items="items"
           :search="search"
-          @click:row="setSelectedVehicle" 
+          @click:row="setSelectedVehicle"
           @pagination="handlePagination"
           class="row-pointer"
         ></v-data-table>
@@ -102,10 +126,13 @@
         ></GmapMap>
       </v-card>
     </v-card>
-    <v-dialog v-model="showVehicleDetails" @click:outside="clearSelectedVehicle">
-      <vehicle-details 
-        v-if="showVehicleDetails" 
-        :vehicleId="showVehicleDetails" 
+    <v-dialog
+      v-model="showVehicleDetails"
+      @click:outside="clearSelectedVehicle"
+    >
+      <vehicle-details
+        v-if="showVehicleDetails"
+        :vehicleId="showVehicleDetails"
         :clearSelectedVehicle="clearSelectedVehicle"
       />
     </v-dialog>
@@ -113,13 +140,14 @@
 </template>
 
 <script>
-import VehicleDetails from './VehicleDetails.vue'
-import Vue from 'vue';
-import * as VueGoogleMaps from 'vue2-google-maps';
+const axios = require("axios");
+import VehicleDetails from "./VehicleDetails.vue";
+import Vue from "vue";
+import * as VueGoogleMaps from "vue2-google-maps";
 
 Vue.use(VueGoogleMaps, {
   load: {
-    key: 'AIzaSyDnzuP55GknIhhOh5L1pJbpPc5DBkc_2pM',
+    key: "AIzaSyDnzuP55GknIhhOh5L1pJbpPc5DBkc_2pM",
   },
 });
 
@@ -128,7 +156,7 @@ export default {
 
   data: () => ({
     tabs: 0,
-    search: '',
+    search: "",
     results: 0,
     center: { lat: 45.431311, lng: -73.479005 },
     zoom: 19,
@@ -152,38 +180,37 @@ export default {
     ],
     inventory: [
       {
-        '_id': '62157f5977dec1cf15fa88f4',
-        'vin': '2C4GM68475R667819',
-        'model-#': '7FT6SF',
-        'interior-color': 'Black',
-        'exterior-color': 'White',
-        'on-road-since': null,
-        'added-on': Date.now
-      }
+        _id: "62157f5977dec1cf15fa88f4",
+        vin: "2C4GM68475R667819",
+        "model#": "7FT6SF",
+        interiorColor: "Black",
+        exteriorColor: "White",
+        year: 2022,
+        options: ["Electric windows", "Heated seats"],
+        initialPrice: "$45 000",
+      },
     ],
     sold: [
       {
-        '_id': '62157f663cf86d463f9d6cde',
-        'vin': '1FTSX21P05EC23578',
-        'model-#': '7FT6SF',
-        'interior-color': 'Black',
-        'exterior-color': 'Black',
-        'on-road-since': null,
-        'added-on': Date.now
+        _id: "62157f663cf86d463f9d6cde",
+        vin: "1FTSX21P05EC23578",
+        "model-#": "7FT6SF",
+        "interior-color": "Black",
+        "exterior-color": "Black",
+        "on-road-since": null,
+        "added-on": Date.now,
       },
       {
-        '_id': '62157f6cae21964d423f7cc4',
-        'vin': 'JH4DA3340HS032394',
-        'model-#': 'F150TX',
-        'interior-color': 'White',
-        'exterior-color': 'White',
-        'on-road-since': null,
-        'added-on': Date.now
-      }
+        _id: "62157f6cae21964d423f7cc4",
+        vin: "JH4DA3340HS032394",
+        "model-#": "F150TX",
+        "interior-color": "White",
+        "exterior-color": "White",
+        "on-road-since": null,
+        "added-on": Date.now,
+      },
     ],
-    delivered: [
-
-    ]
+    delivered: [],
   }),
   methods: {
     setSelectedVehicle(item) {
@@ -191,31 +218,68 @@ export default {
 
       query.vehicle = item._id;
 
-      this.$router.replace({ query })
+      this.$router.replace({ query });
     },
     clearSelectedVehicle() {
       this.$router.replace({ query: {} });
     },
     handlePagination(pagination) {
       this.results = pagination.itemsLength;
-    }
+    },
+    fetchHeaders() {
+      axios
+        .get(`${this.$store.state.baseApiUrl}/properties`, {
+          params: {
+            dealership: this.$store.state.loggedInUser.dealership,
+          },
+        })
+        .then((response) => {
+          let tempHeaders = [
+            {
+              text: "VIN",
+              value: "vin",
+            },
+          ];
+
+          response.data.payload.forEach((property) => {
+            if (property.visible) {
+              tempHeaders.push({
+                text: property.label,
+                value: property.key,
+              });
+            }
+          });
+
+          this.headers = tempHeaders;
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
   },
   computed: {
     items() {
       switch (this.tabs) {
-        case 0: return this.inventory;
-        case 1: return this.sold;
-        case 2: return this.delivered;
-        default: return [];
+        case 0:
+          return this.inventory;
+        case 1:
+          return this.sold;
+        case 2:
+          return this.delivered;
+        default:
+          return [];
       }
     },
     showVehicleDetails() {
       return this.$route.query.vehicle;
-    }
+    },
+  },
+  mounted() {
+    this.fetchHeaders();
   },
   components: {
-    VehicleDetails
-  }
+    VehicleDetails,
+  },
 };
 </script>
 
@@ -226,5 +290,10 @@ export default {
 }
 .row-pointer >>> tbody tr :hover {
   cursor: pointer;
+}
+
+.v-data-table {
+  overflow: hidden !important;
+  white-space: nowrap;
 }
 </style>

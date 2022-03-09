@@ -18,7 +18,14 @@
           <v-icon left dark> mdi-plus </v-icon>
           Add Account
         </v-btn>
-        <v-btn color="primary" text rounded small v-if="activeTab == 2">
+        <v-btn
+          color="primary"
+          text
+          rounded
+          small
+          v-if="activeTab == 2"
+          @click="addingProperty = true"
+        >
           <v-icon left dark> mdi-plus </v-icon>
           Add Property
         </v-btn>
@@ -75,13 +82,15 @@
               dense
               outlined
               prepend-inner-icon="mdi-magnify"
-              placeholder="Search property name, input type, visible, etc."
+              placeholder="Search property label, input type, or options"
               hide-details
+              v-model="propertySearch"
             ></v-text-field>
             <v-spacer />
             <v-btn
               color="primary"
               :class="$vuetify.breakpoint.xs ? 'mt-2' : ''"
+              @click="editingPropertyOrder = true"
             >
               <v-icon left dark class="mr-2"> mdi-pencil </v-icon>
               Edit property order
@@ -131,7 +140,12 @@
     </v-card>
     <dealership-details id="dealership-details" v-if="activeTab == 0" />
     <dealership-accounts id="dealership-accounts" v-if="activeTab == 1" />
-    <dealership-properties id="dealership-properties" v-if="activeTab == 2" />
+    <dealership-properties
+      id="dealership-properties"
+      ref="dealershipProperties"
+      v-if="activeTab == 2"
+      :propertySearch="propertySearch"
+    />
     <dealership-zones
       id="dealership-zones"
       v-if="activeTab == 3"
@@ -148,12 +162,26 @@
       @set-role-count="setRoleCount"
       v-if="activeTab == 4"
     />
-    <v-dialog max-width="400" v-model="addingRole">
+    <v-dialog max-width="500" v-model="addingRole">
       <add-dealership-role
         v-if="addingRole"
         @cancel="addingRole = false"
         @role-created="roleCreated"
         :roleCount="roleCount"
+      />
+    </v-dialog>
+    <v-dialog max-width="500" v-model="addingProperty">
+      <add-dealership-property
+        v-if="addingProperty"
+        @cancel="addingProperty = false"
+        @property-created="propertyCreated"
+      />
+    </v-dialog>
+    <v-dialog max-width="500" v-model="editingPropertyOrder">
+      <edit-property-order
+        v-if="editingPropertyOrder"
+        @cancel="editingPropertyOrder = false"
+        @property-order-updated="propertyOrderUpdated"
       />
     </v-dialog>
   </div>
@@ -165,7 +193,10 @@ import DealershipAccounts from "./accounts/DealershipAccounts.vue";
 import DealershipProperties from "./properties/DealershipProperties.vue";
 import DealershipZones from "./zones/DealershipZones.vue";
 import DealershipRoles from "./authorization/DealershipRoles.vue";
+
 import AddDealershipRole from "./authorization/AddDealershipRole.vue";
+import AddDealershipProperty from "./properties/AddDealershipProperty.vue";
+import EditPropertyOrder from "./properties/EditPropertyOrder.vue";
 
 export default {
   name: "Dealership",
@@ -174,8 +205,10 @@ export default {
     activeTab: 0,
     addingAccount: false,
     addingProperty: false,
+    editingPropertyOrder: false,
     addingZone: false,
     addingRole: false,
+    propertySearch: "",
     roleCount: 0,
   }),
   methods: {
@@ -193,6 +226,22 @@ export default {
       );
       this.$refs.dealershipRoles.fetchRoles();
     },
+    propertyCreated() {
+      this.addingProperty = false;
+      this.$refs.dealershipProperties.showMessage(
+        "success",
+        "Vehicle property created successfully."
+      );
+      this.$refs.dealershipProperties.fetchProperties();
+    },
+    propertyOrderUpdated() {
+      this.editingPropertyOrder = false;
+      this.$refs.dealershipProperties.showMessage(
+        "success",
+        "The order of the properties have been updated successfully."
+      );
+      this.$refs.dealershipProperties.fetchProperties();
+    },
   },
   components: {
     DealershipDetails,
@@ -201,6 +250,8 @@ export default {
     DealershipZones,
     DealershipRoles,
     AddDealershipRole,
+    AddDealershipProperty,
+    EditPropertyOrder,
   },
 };
 </script>
