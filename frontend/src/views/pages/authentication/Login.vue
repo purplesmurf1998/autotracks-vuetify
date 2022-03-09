@@ -23,7 +23,7 @@
               class="mx-auto"
               >{{ errorMessage }}</v-alert
             >
-            <v-card min-width="500" max-width="500" class="mx-auto pa-2">
+            <v-card max-width="500" class="mx-auto pa-2">
               <form @submit.prevent="login">
                 <v-card-text>
                   <v-text-field label="Email" outlined v-model="email" dense />

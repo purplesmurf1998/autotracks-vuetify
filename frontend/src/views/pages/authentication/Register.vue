@@ -30,7 +30,6 @@
               ></v-progress-circular>
             </v-row>
             <v-card
-              min-width="500"
               max-width="500"
               class="mx-auto pa-2"
               v-show="step == 1 && !loading"
@@ -114,7 +113,6 @@
               </v-form>
             </v-card>
             <v-card
-              min-width="500"
               max-width="500"
               class="mx-auto pa-2"
               v-show="step == 2 && !loading"
@@ -188,7 +186,6 @@
               </v-form>
             </v-card>
             <v-card
-              min-width="500"
               max-width="500"
               class="mx-auto pa-2"
               v-show="step == 3 && !loading"
