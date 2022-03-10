@@ -86,15 +86,6 @@
               hide-details
               v-model="propertySearch"
             ></v-text-field>
-            <v-spacer />
-            <v-btn
-              color="primary"
-              :class="$vuetify.breakpoint.xs ? 'mt-2' : ''"
-              @click="editingPropertyOrder = true"
-            >
-              <v-icon left dark class="mr-2"> mdi-pencil </v-icon>
-              Edit property order
-            </v-btn>
           </v-row>
           <!-- Locations Sub Header -->
           <v-row v-if="activeTab == 3" class="pa-2" align="center">
@@ -177,13 +168,6 @@
         @property-created="propertyCreated"
       />
     </v-dialog>
-    <v-dialog max-width="500" v-model="editingPropertyOrder">
-      <edit-property-order
-        v-if="editingPropertyOrder"
-        @cancel="editingPropertyOrder = false"
-        @property-order-updated="propertyOrderUpdated"
-      />
-    </v-dialog>
   </div>
 </template>
 
@@ -196,7 +180,6 @@ import DealershipRoles from "./authorization/DealershipRoles.vue";
 
 import AddDealershipRole from "./authorization/AddDealershipRole.vue";
 import AddDealershipProperty from "./properties/AddDealershipProperty.vue";
-import EditPropertyOrder from "./properties/EditPropertyOrder.vue";
 
 export default {
   name: "Dealership",
@@ -234,14 +217,6 @@ export default {
       );
       this.$refs.dealershipProperties.fetchProperties();
     },
-    propertyOrderUpdated() {
-      this.editingPropertyOrder = false;
-      this.$refs.dealershipProperties.showMessage(
-        "success",
-        "The order of the properties have been updated successfully."
-      );
-      this.$refs.dealershipProperties.fetchProperties();
-    },
   },
   components: {
     DealershipDetails,
@@ -251,7 +226,6 @@ export default {
     DealershipRoles,
     AddDealershipRole,
     AddDealershipProperty,
-    EditPropertyOrder,
   },
 };
 </script>

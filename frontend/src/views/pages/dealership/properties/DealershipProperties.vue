@@ -43,10 +43,6 @@
             mdi-delete
           </v-icon>
         </template>
-        <template v-slot:[`item.visible`]="{ item }">
-          <v-chip color="primary" v-if="item.visible" small>Visible</v-chip>
-          <v-chip color="secondary" v-if="!item.visible" small>Hidden</v-chip>
-        </template>
         <template v-slot:[`item.required`]="{ item }">
           <v-chip color="primary" v-if="item.required" small>Required</v-chip>
           <v-chip color="secondary" v-if="!item.required" small
@@ -70,7 +66,7 @@
 const axios = require("axios");
 
 import DeleteDialog from "../../../../components/DeleteDialog.vue";
-import EditDealershipProperty from "./EditDealershipProperty.vue"
+import EditDealershipProperty from "./EditDealershipProperty.vue";
 
 export default {
   name: "DealershipProperties",
@@ -90,11 +86,6 @@ export default {
     properties: [],
     headers: [
       {
-        text: "Index",
-        value: "position",
-        align: "center",
-      },
-      {
         text: "Label",
         value: "label",
         align: "start",
@@ -102,11 +93,6 @@ export default {
       {
         text: "Input Type",
         value: "input_type",
-        align: "start",
-      },
-      {
-        text: "Visible",
-        value: "visible",
         align: "start",
       },
       {
@@ -186,7 +172,7 @@ export default {
   },
   components: {
     DeleteDialog,
-    EditDealershipProperty
+    EditDealershipProperty,
   },
 };
 </script>

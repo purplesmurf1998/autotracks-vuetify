@@ -72,11 +72,6 @@
           </v-list-item-action>
         </template>
       </v-combobox>
-      <v-checkbox
-        label="Property visible in the inventory"
-        v-model="visible"
-        hide-details
-      />
       <v-checkbox label="A value is required" v-model="required" />
       <v-textarea
         label="Description (optional)"
@@ -105,7 +100,6 @@ export default {
     label: "",
     inputType: "",
     options: "",
-    visible: true,
     required: true,
     description: "",
 
@@ -131,7 +125,6 @@ export default {
         label: this.label,
         input_type: this.inputType,
         options: [],
-        visible: this.visible,
         required: this.required,
         description: this.description,
       };

@@ -1,6 +1,9 @@
 const ErrorResponse = require('../utils/errorResponse');
 const asyncHandler = require('../middleware/async');
-const Properties = require('../tables/Properties')
+const Properties = require('../tables/Properties');
+const PropertyOrders = require('../tables/PropertyOrders');
+const Users = require('../tables/Users');
+const Dealerships = require('../tables/Dealerships');
 
 // @desc        Get all vehicle property models for a specific dealership
 // @route       GET /api/v1/properties
@@ -15,16 +18,7 @@ exports.getProperties = asyncHandler(async (req, res, next) => {
     );
   }
 
-  let properties = await Properties.find({ dealership: dealershipId });
-  // sort results manually since MongoDB on Azure doesn't do it natively with mongoose
-  properties.sort((el_1, el_2) => {
-    if (el_1.position < el_2.position)
-      return -1;
-    else if (el_1.position > el_2.position)
-      return 1;
-    else
-      return 0;
-  });
+  const properties = await Properties.find({ dealership: dealershipId });
 
   res.status(200).json({
     success: true,
@@ -37,13 +31,28 @@ exports.getProperties = asyncHandler(async (req, res, next) => {
 // @route       POST /api/v1/properties
 // @access      Private
 exports.createProperty = asyncHandler(async (req, res, next) => {
-  const newProperty = req.body;
 
-  const numProperties = await Properties.find({ dealership: req.body.dealership });
-  const position = numProperties.length + 1;
-  newProperty.position = position;
+  const property = await Properties.create(req.body);
 
-  const property = await Properties.create(newProperty);
+  // get the dealership
+  const dealership = await Dealerships.findById(req.body.dealership);
+
+  // add the property to property orders of the accounts associated to the dealership plus the owner
+  // start with the owner
+  const owner = await Users.findById(dealership.owner);
+  // get the property order
+  let propertyOrder = await PropertyOrders.findOne({ dealership: dealership._id, user: owner._id });
+  console.log(propertyOrder);
+  propertyOrder.order.push({ property: property._id, visible: true });
+  propertyOrder.save();
+  // do the rest of the accounts in the dealership
+  const users = await Users.find({ dealership: dealership._id, owner: false });
+  for (let i = 0; i < users.length; i++) {
+    propertyOrder = await PropertyOrders.findOne({ dealership: dealership._id, user: users[i]._id });
+    console.log(propertyOrder);
+    propertyOrder.order.push({ property: property._id, visible: true });
+    propertyOrder.save();
+  }
 
   res.status(201).json({ success: true, payload: property })
 });
@@ -67,50 +76,86 @@ exports.updateProperty = asyncHandler(async (req, res, next) => {
 // @access      Private
 exports.deleteProperty = asyncHandler(async (req, res, next) => {
   // find vehicle property to delete
-  const property = await Properties.findById(req.params.propertyId);
+  const property = await Properties.findById(req.params.propertyId)
 
-  const dealershipId = property.dealership;
-  const oldPosition = property.position;
-  // delete vehicle
-  property.remove();
-  // cascade positions for every property with a position above the deleted property's position
-  const cascadeProperties = await Properties.find({ dealership: dealershipId, position: { $gt: oldPosition } }).sort('position');
-  cascadeProperties.forEach(property => {
-    property.position = property.position - 1;
-    property.save();
-  })
+  const dealership = await Dealerships.findById(property.dealership);
+
+  // delete the property from property orders of the accounts associated to the dealership plus the owner
+  // start with the owner
+  const owner = await Users.findById(dealership.owner);
+  // get the property order
+  let propertyOrder = await PropertyOrders.findOne({ dealership: dealership._id, user: owner._id });
+  let index = propertyOrder.order.findIndex(order => {
+    return order.property._id.valueOf() == property._id.valueOf()
+  });
+  if (index >= 0) {
+    propertyOrder.order.splice(index, 1);
+    propertyOrder.save();
+  }
+  // do the rest of the accounts in the dealership
+  const users = await Users.find({ dealership: dealership._id, owner: false });
+  for (let i = 0; i < users.length; i++) {
+    propertyOrder = await PropertyOrders.findOne({ dealership: dealership._id, user: users[i]._id });
+    index = propertyOrder.order.findIndex(order => {
+      return order.property._id.valueOf() == property._id.valueOf()
+    });
+    if (index >= 0) {
+      propertyOrder.order.splice(index, 1);
+      propertyOrder.save();
+    }
+  }
+
+  property.delete();
+
   // return data
   res.status(200).json({ success: true, payload: {} });
 });
 
 // @desc        Update the position of all vehicle properties in batch
-// @route       PUT /api/v1/dealerships/:dealershipId/vehicles/properties
+// @route       PUT /api/v1/properties/order/:orderId
 // @access      Private
-exports.updatePropertyPositions = asyncHandler(async (req, res, next) => {
-  // body of the request should have the list of vehicle properties in the new order
-  // go through the list and change the positions in the backend to their new index
+exports.updatePropertyOrder = asyncHandler(async (req, res, next) => {
+  // find vehicle property order model to update
+  const propertyOrder = await PropertyOrders.findByIdAndUpdate(req.params.orderId, req.body, {
+    new: true,
+    runValidators: true
+  });
 
-  const properties = req.body.properties;
-  let newProperties = [];
-  for (let i = 0; i < properties.length; i++) {
-    // find the vehicle property
-    const property = await Properties.findByIdAndUpdate(
-      properties[i]._id,
-      {
-        position: i + 1
-      },
-      {
-        new: true,
-        runValidators: true
-      }
-    );
-    if (!property) {
-      return next(new ErrorResponse(`Vehicle property not found with id ${properties[i]._id}`, 404));
-    }
+  // return data
+  res.status(200).json({ success: true, payload: propertyOrder });
+});
 
-    // add the property to the new list
-    newProperties.push(property);
+// @desc        Add a property in order for a specific user
+// @route       POST /api/v1/properties/order
+// @access      Private
+exports.createPropertyOrder = asyncHandler(async (req, res, next) => {
+
+  const { dealership, user } = req.body;
+
+  const existingOrder = await PropertyOrders.find({ dealership, user });
+
+  if (existingOrder) {
+    return next(new ErrorResponse('An order for this dealership and user already exists', 400));
   }
 
-  res.status(200).json({ success: true, payload: newProperties });
+  // create the order or properties for the account and dealership
+  const order = await PropertyOrders.create(req.body);
+
+  res.status(201).json({ success: true, payload: order })
+});
+
+// @desc        Get properties in order for a specific user
+// @route       POST /api/v1/properties/order/:orderId
+// @access      Private
+exports.getPropertyOrder = asyncHandler(async (req, res, next) => {
+
+  const { dealership, user } = req.query;
+
+  const order = await PropertyOrders.findOne({ dealership, user }).populate({ path: 'order', populate: { path: 'property' } });
+
+  if (!order) {
+    return next(new ErrorResponse(`Vehicle property order not found with id ${req.params.orderId}`, 404));
+  }
+
+  res.status(201).json({ success: true, payload: order })
 });

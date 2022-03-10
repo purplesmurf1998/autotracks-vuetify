@@ -72,11 +72,6 @@
           </v-list-item-action>
         </template>
       </v-combobox>
-      <v-checkbox
-        label="Property visible in the inventory"
-        v-model="visible"
-        hide-details
-      />
       <v-checkbox label="A value is required" v-model="required" />
       <v-textarea
         label="Description (optional)"
@@ -96,23 +91,22 @@
 </template>
 
 <script>
-const axios = require('axios');
+const axios = require("axios");
 
 export default {
-  name: 'EditDealershipProperty',
+  name: "EditDealershipProperty",
   props: {
     property: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
   },
   data: () => ({
-    label: '',
-    inputType: '',
-    visible: true,
+    label: "",
+    inputType: "",
     required: true,
-    description: '',
-    
+    description: "",
+
     activator: null,
     attach: null,
     colors: ["green", "purple", "indigo", "cyan", "teal", "orange"],
@@ -133,11 +127,10 @@ export default {
       let updatedProperty = {
         label: this.label,
         input_type: this.inputType,
-        visible: this.visible,
         required: this.required,
         description: this.description,
-        options: []
-      }
+        options: [],
+      };
 
       if (this.inputType == "Dropdown") {
         this.model.forEach((option) => {
@@ -146,15 +139,19 @@ export default {
       }
 
       axios
-        .put(`${this.$store.state.baseApiUrl}/properties/${this.property._id}`, updatedProperty)
+        .put(
+          `${this.$store.state.baseApiUrl}/properties/${this.property._id}`,
+          updatedProperty
+        )
         .then(() => {
-          this.$emit('property-updated');
-        }).catch(error => {
-          console.log(error);
+          this.$emit("property-updated");
         })
+        .catch((error) => {
+          console.log(error);
+        });
     },
     cancel() {
-      this.$emit('cancel');
+      this.$emit("cancel");
     },
     edit(index, item) {
       if (!this.editing) {
@@ -202,24 +199,22 @@ export default {
   mounted() {
     this.label = this.property.label;
     this.inputType = this.property.input_type;
-    this.visible = this.property.visible;
     this.required = this.property.required;
     this.description = this.property.description;
 
-    if (this.property.input_type == 'Dropdown') {
+    if (this.property.input_type == "Dropdown") {
       let tempModel = [];
-      this.property.options.forEach(option => {
+      this.property.options.forEach((option) => {
         tempModel.push({
           text: option,
-          color: 'primary'
-        })
+          color: "primary",
+        });
       });
       this.model = tempModel;
     }
-  }
-}
+  },
+};
 </script>
 
 <style>
-
 </style>

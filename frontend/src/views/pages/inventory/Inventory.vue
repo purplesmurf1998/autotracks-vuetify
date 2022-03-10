@@ -16,6 +16,7 @@
           rounded
           small
           v-if="!$vuetify.breakpoint.mobile"
+          @click="editingPropertyOrder = true"
         >
           <v-icon left dark class="mr-2"> mdi-table-column </v-icon>
           Edit Columns
@@ -26,6 +27,7 @@
           rounded
           small
           v-if="!$vuetify.breakpoint.mobile"
+          @click="addingVehicle = true"
         >
           <v-icon left dark class="mr-2"> mdi-plus </v-icon>
           Add Vehicle
@@ -48,13 +50,25 @@
           </template>
           <v-list>
             <v-list-item>
-              <v-btn color="primary" text rounded small>
+              <v-btn
+                color="primary"
+                text
+                rounded
+                small
+                @click="editingPropertyOrder = true"
+              >
                 <v-icon left dark class="mr-2"> mdi-table-column </v-icon>
                 Edit Columns
               </v-btn>
             </v-list-item>
             <v-list-item>
-              <v-btn color="primary" text rounded small>
+              <v-btn
+                color="primary"
+                text
+                rounded
+                small
+                @click="addingVehicle = true"
+              >
                 <v-icon left dark class="mr-2"> mdi-plus </v-icon>
                 Add Vehicle
               </v-btn>
@@ -136,12 +150,28 @@
         :clearSelectedVehicle="clearSelectedVehicle"
       />
     </v-dialog>
+    <v-dialog max-width="500" v-model="editingPropertyOrder">
+      <edit-property-order
+        v-if="editingPropertyOrder"
+        @cancel="editingPropertyOrder = false"
+        @property-order-updated="propertyOrderUpdated"
+      />
+    </v-dialog>
+    <v-dialog max-width="500" v-model="addingVehicle">
+      <add-vehicle
+        v-if="addingVehicle"
+        @cancel="addingVehicle = false"
+        @vehicle-added="vehicleAdded"
+      />
+    </v-dialog>
   </div>
 </template>
 
 <script>
 const axios = require("axios");
 import VehicleDetails from "./VehicleDetails.vue";
+import EditPropertyOrder from "./EditPropertyOrder.vue";
+import AddVehicle from "./AddVehicle.vue";
 import Vue from "vue";
 import * as VueGoogleMaps from "vue2-google-maps";
 
@@ -157,62 +187,23 @@ export default {
   data: () => ({
     tabs: 0,
     search: "",
+    filters: [],
     results: 0,
     center: { lat: 45.431311, lng: -73.479005 },
     zoom: 19,
-    headers: [
-      {
-        text: "VIN",
-        value: "vin",
-      },
-      {
-        text: "Model #",
-        value: "model-#",
-      },
-      {
-        text: "Interior Color",
-        value: "interior-color",
-      },
-      {
-        text: "Exterior Color",
-        value: "exterior-color",
-      },
-    ],
-    inventory: [
-      {
-        _id: "62157f5977dec1cf15fa88f4",
-        vin: "2C4GM68475R667819",
-        "model#": "7FT6SF",
-        interiorColor: "Black",
-        exteriorColor: "White",
-        year: 2022,
-        options: ["Electric windows", "Heated seats"],
-        initialPrice: "$45 000",
-      },
-    ],
-    sold: [
-      {
-        _id: "62157f663cf86d463f9d6cde",
-        vin: "1FTSX21P05EC23578",
-        "model-#": "7FT6SF",
-        "interior-color": "Black",
-        "exterior-color": "Black",
-        "on-road-since": null,
-        "added-on": Date.now,
-      },
-      {
-        _id: "62157f6cae21964d423f7cc4",
-        vin: "JH4DA3340HS032394",
-        "model-#": "F150TX",
-        "interior-color": "White",
-        "exterior-color": "White",
-        "on-road-since": null,
-        "added-on": Date.now,
-      },
-    ],
+    editingPropertyOrder: false,
+    addingVehicle: false,
+    headers: [],
+    inventory: [],
+    sold: [],
     delivered: [],
   }),
   methods: {
+    vehicleAdded(vehicle) {
+      console.log(vehicle);
+      this.addingVehicle = false;
+      this.fetchVehicles();
+    },
     setSelectedVehicle(item) {
       let query = {};
 
@@ -226,11 +217,16 @@ export default {
     handlePagination(pagination) {
       this.results = pagination.itemsLength;
     },
+    propertyOrderUpdated() {
+      this.editingPropertyOrder = false;
+      this.fetchHeaders();
+    },
     fetchHeaders() {
       axios
-        .get(`${this.$store.state.baseApiUrl}/properties`, {
+        .get(`${this.$store.state.baseApiUrl}/properties/order`, {
           params: {
             dealership: this.$store.state.loggedInUser.dealership,
+            user: this.$store.state.loggedInUser._id,
           },
         })
         .then((response) => {
@@ -241,16 +237,38 @@ export default {
             },
           ];
 
-          response.data.payload.forEach((property) => {
-            if (property.visible) {
+          response.data.payload.order.forEach((item) => {
+            if (item.visible) {
               tempHeaders.push({
-                text: property.label,
-                value: property.key,
+                text: item.property.label,
+                value: item.property.key,
               });
             }
           });
 
           this.headers = tempHeaders;
+          this.fetchVehicles();
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    fetchVehicles() {
+      axios
+        .get(`${this.$store.state.baseApiUrl}/vehicles`, {
+          params: {
+            dealership: this.$store.state.loggedInUser.dealership,
+          },
+        })
+        .then((response) => {
+          let tempInventory = [];
+          response.data.payload.forEach((vehicle) => {
+            let properties = vehicle.properties;
+            properties.vin = vehicle.vin;
+            properties._id = vehicle._id;
+            tempInventory.push(properties);
+          });
+          this.inventory = tempInventory;
         })
         .catch((error) => {
           console.log(error);
@@ -259,15 +277,22 @@ export default {
   },
   computed: {
     items() {
+      let tempItems = [];
       switch (this.tabs) {
         case 0:
-          return this.inventory;
+          tempItems = this.inventory;
+          break;
         case 1:
-          return this.sold;
+          tempItems = this.sold;
+          break;
         case 2:
-          return this.delivered;
-        default:
-          return [];
+          tempItems = this.delivered;
+      }
+
+      if (this.filters.length == 0) {
+        return tempItems;
+      } else {
+        return tempItems;
       }
     },
     showVehicleDetails() {
@@ -279,6 +304,8 @@ export default {
   },
   components: {
     VehicleDetails,
+    EditPropertyOrder,
+    AddVehicle,
   },
 };
 </script>

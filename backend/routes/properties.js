@@ -6,15 +6,21 @@ const {
   createProperty,
   updateProperty,
   deleteProperty,
-  updatePropertyPositions
+  updatePropertyOrder,
+  createPropertyOrder,
+  getPropertyOrder
 } = require('../controllers/properties');
 
 router.route('/')
   .post(createProperty)
   .get(getProperties);
 
-router.route('/positions')
-  .put(updatePropertyPositions);
+router.route('/order')
+  .get(getPropertyOrder)
+  .post(createPropertyOrder);
+
+router.route('/order/:orderId')
+  .put(updatePropertyOrder);
 
 router.route('/:propertyId')
   .put(updateProperty)
