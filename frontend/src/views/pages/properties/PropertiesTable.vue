@@ -11,29 +11,13 @@
       >{{ message }}</v-alert
     >
     <v-card width="90%" class="mx-auto mt-5">
-      <v-card-title>
-        <v-toolbar flat>
-          <v-toolbar-title>Dealership Properties</v-toolbar-title>
-          <!-- Delete dialog -->
-          <v-dialog
-            transition="dialog-bottom-transition"
-            width="500"
-            v-model="deleteDialog"
-          >
-            <delete-dialog
-              dialogContent="Are you certain you want to delete this vehicle property?"
-              v-on:confirm="confirmDeleteItem"
-              v-on:cancel="deleteDialog = false"
-            ></delete-dialog>
-          </v-dialog>
-        </v-toolbar>
-      </v-card-title>
       <v-data-table
         :headers="headers"
         :items="properties"
         :items-per-page="10"
         :options="{ sortBy: ['position'] }"
         :search="propertySearch"
+        class="mb-5"
       >
         <template v-slot:[`item.actions`]="{ item }">
           <v-icon small class="mr-2" @click="editItem(item)">
@@ -52,12 +36,23 @@
       </v-data-table>
     </v-card>
     <v-dialog max-width="500" v-model="editingProperty">
-      <edit-dealership-property
+      <edit-property
         v-if="editingProperty"
         :property="editProperty"
         @cancel="editingProperty = false"
         @property-updated="propertyUpdated"
       />
+    </v-dialog>
+    <v-dialog
+      transition="dialog-bottom-transition"
+      width="500"
+      v-model="deleteDialog"
+    >
+      <delete-dialog
+        dialogContent="Are you certain you want to delete this vehicle property?"
+        v-on:confirm="confirmDeleteItem"
+        v-on:cancel="deleteDialog = false"
+      ></delete-dialog>
     </v-dialog>
   </div>
 </template>
@@ -65,11 +60,11 @@
 <script>
 const axios = require("axios");
 
-import DeleteDialog from "../../../../components/DeleteDialog.vue";
-import EditDealershipProperty from "./EditDealershipProperty.vue";
+import DeleteDialog from "../../../components/DeleteDialog.vue";
+import EditProperty from "./EditProperty.vue";
 
 export default {
-  name: "DealershipProperties",
+  name: "PropertiesTable",
   props: {
     propertySearch: {
       type: String,
@@ -172,7 +167,7 @@ export default {
   },
   components: {
     DeleteDialog,
-    EditDealershipProperty,
+    EditProperty,
   },
 };
 </script>

@@ -2,12 +2,12 @@
   <v-card width="90%" class="mx-auto mt-5">
     <v-fade-transition>
       <v-card flat v-if="addingZone">
-        <v-card-title>Adding a location</v-card-title>
+        <v-card-title>Adding a zone</v-card-title>
         <v-card-text>
           <v-row>
             <v-col>
               <v-text-field
-                label="Location Name"
+                label="Name"
                 outlined
                 dense
                 hide-details
@@ -15,7 +15,7 @@
                 v-model="newName"
               />
               <v-textarea
-                label="Location Description"
+                label="Description (optional)"
                 outlined
                 dense
                 hide-details
@@ -104,7 +104,7 @@ Vue.use(VueGoogleMaps, {
 });
 
 export default {
-  name: "DealershipZones",
+  name: "ZonesMap",
   props: {
     addingZone: {
       type: Boolean,

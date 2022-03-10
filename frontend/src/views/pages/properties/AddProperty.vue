@@ -94,7 +94,7 @@
 const axios = require("axios");
 
 export default {
-  name: "AddDealershipProperty",
+  name: "AddProperty",
 
   data: () => ({
     label: "",

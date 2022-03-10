@@ -46,7 +46,7 @@
 const axios = require("axios");
 
 export default {
-  name: "AddDealershipRole",
+  name: "AddRole",
   props: {
     roleCount: {
       type: Number,

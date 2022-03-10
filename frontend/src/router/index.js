@@ -8,10 +8,11 @@ import Container from '../views/containers/Container.vue';
 import Dashboard from '../views/Dashboard.vue';
 // import pages
 import Dealership from '../views/pages/dealership/Dealership.vue';
-import Clients from '../views/pages/clients/Clients.vue';
+import Accounts from '../views/pages/accounts/Accounts.vue';
+import Properties from '../views/pages/properties/Properties';
+import Zones from '../views/pages/zones/Zones';
+import Roles from '../views/pages/roles/Roles';
 import Inventory from '../views/pages/inventory/Inventory.vue';
-import Lists from '../views/pages/lists/Lists.vue';
-import Transactions from '../views/pages/transactions/Transactions.vue';
 import ConfirmVehicleLocation from '../views/pages/location/ConfirmVehicleLocation.vue';
 // import auth pages
 import Login from '../views/pages/authentication/Login.vue';
@@ -43,9 +44,33 @@ const routes = [
         }
       },
       {
-        path: 'clients',
-        name: 'Clients',
-        component: Clients,
+        path: 'accounts',
+        name: 'Accounts',
+        component: Accounts,
+        meta: {
+          authRequired: true
+        }
+      },
+      {
+        path: 'properties',
+        name: 'Properties',
+        component: Properties,
+        meta: {
+          authRequired: true
+        }
+      },
+      {
+        path: 'zones',
+        name: 'Zones',
+        component: Zones,
+        meta: {
+          authRequired: true
+        }
+      },
+      {
+        path: 'roles',
+        name: 'Roles',
+        component: Roles,
         meta: {
           authRequired: true
         }
@@ -58,22 +83,6 @@ const routes = [
           authRequired: true
         }
       },
-      {
-        path: 'lists',
-        name: 'Lists',
-        component: Lists,
-        meta: {
-          authRequired: true
-        }
-      },
-      {
-        path: 'transactions',
-        name: 'Transactions',
-        component: Transactions,
-        meta: {
-          authRequired: true
-        }
-      }
     ]
   },
   {

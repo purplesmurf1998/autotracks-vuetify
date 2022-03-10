@@ -10,7 +10,7 @@
           </v-list-item-content>
         </v-list-item>
 
-        <v-list dense nav rounded>
+        <v-list dense nav>
           <v-list-item-group
             v-model="active"
             active-class="bg-active"
@@ -21,12 +21,18 @@
               :key="index"
               :to="item.to"
             >
+              <v-list-item-icon class="mr-0">
+                <v-icon dark>{{ item.icon }}</v-icon>
+              </v-list-item-icon>
               <v-list-item-content>
                 <v-list-item-title
                   class="pl-6"
                   v-text="item.title"
                 ></v-list-item-title>
               </v-list-item-content>
+              <v-list-item-action v-if="item.badge">
+                <v-chip v-text="item.badge" x-small color="primary"></v-chip>
+              </v-list-item-action>
             </v-list-item>
           </v-list-item-group>
         </v-list>
@@ -48,31 +54,43 @@ export default {
       {
         title: "Dashboard",
         to: "/dashboard",
+        icon: "mdi-view-dashboard",
+        badge: null,
+      },
+      {
+        title: "Inventory",
+        to: "/inventory",
+        icon: "mdi-car",
         badge: null,
       },
       {
         title: "Dealership",
         to: "/dealership",
-        badge: true,
-      },
-      {
-        title: "Inventory",
-        to: "/inventory",
+        icon: "mdi-cog",
         badge: null,
       },
       {
-        title: "Clients",
-        to: "/clients",
+        title: "Accounts",
+        to: "/accounts",
+        icon: "mdi-account",
+        badge: "New!",
+      },
+      {
+        title: "Properties",
+        to: "/properties",
+        icon: "mdi-car-cog",
         badge: null,
       },
       {
-        title: "Transactions",
-        to: "/transactions",
+        title: "Zones",
+        to: "/zones",
+        icon: "mdi-map-marker",
         badge: null,
       },
       {
-        title: "Lists",
-        to: "/lists",
+        title: "Roles",
+        to: "/roles",
+        icon: "mdi-account-cog",
         badge: null,
       },
     ],

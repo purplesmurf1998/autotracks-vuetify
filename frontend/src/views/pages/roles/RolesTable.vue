@@ -110,10 +110,10 @@
 <script>
 const axios = require("axios");
 
-import DeleteDialog from "../../../../components/DeleteDialog.vue";
+import DeleteDialog from "../../../components/DeleteDialog.vue";
 
 export default {
-  name: "DealershipRoles",
+  name: "RolesTable",
 
   data: () => ({
     selectedRoleIndex: 0,

@@ -8,43 +8,46 @@
         flat
         class="top-toolbar"
       >
-        <v-toolbar-title>Dealership</v-toolbar-title>
+        <v-toolbar-title>Accounts</v-toolbar-title>
         <v-spacer />
         <v-btn color="primary" text rounded small>
-          <v-icon left dark> mdi-swap-horizontal </v-icon>
-          Change Dealerships
+          <v-icon left dark> mdi-plus </v-icon>
+          Add Account
         </v-btn>
       </v-toolbar>
       <v-card width="90%" class="mx-auto" style="margin-top: -49px">
         <v-tabs v-model="activeTab">
-          <v-tab> Details </v-tab>
-          <v-tab> List </v-tab>
+          <v-tab> Table </v-tab>
         </v-tabs>
         <v-divider />
         <v-card-text>
+          <!-- Accounts Sub Header -->
           <v-row class="pa-2" align="center">
-            <p class="mb-0">
-              {{ dealershipCount }} / 5 roles created for this account plan
-            </p>
-            <v-spacer />
-            <v-btn color="primary"> Upgrade Plan </v-btn>
+            <v-text-field
+              dense
+              outlined
+              prepend-inner-icon="mdi-magnify"
+              placeholder="Search account by first name, last name, email, etc."
+              hide-details
+            ></v-text-field>
           </v-row>
         </v-card-text>
       </v-card>
     </v-card>
-    <dealership-details id="dealership-details" v-if="activeTab == 0" />
+    <accounts-table v-if="activeTab == 0" />
   </div>
 </template>
 
 <script>
-import DealershipDetails from "./DealershipDetails.vue";
+import AccountsTable from "./AccountsTable.vue";
 
 export default {
-  name: "Dealership",
+  name: "Accounts",
 
   data: () => ({
     activeTab: 0,
-    dealershipCount: 1,
+    addingAccount: false,
+    accountSearch: "",
   }),
   methods: {
     setActiveTab(value) {
@@ -52,7 +55,7 @@ export default {
     },
   },
   components: {
-    DealershipDetails,
+    AccountsTable,
   },
 };
 </script>
