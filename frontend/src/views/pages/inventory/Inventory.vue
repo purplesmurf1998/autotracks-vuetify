@@ -93,7 +93,7 @@
           </v-row>
         </v-card-text>
       </v-card>
-      <div style="width: 90%" class="mx-auto" v-if="tabs < 3">
+      <div style="width: 90%" class="mx-auto">
         <v-chip small color="primary" class="my-5 text-caption" rounded>
           {{ results }} result(s)
         </v-chip>
@@ -111,7 +111,7 @@
           class="row-pointer"
         ></v-data-table>
       </v-card>
-      <v-card width="90%" class="mx-auto my-10" v-if="tabs == 3">
+      <v-card width="90%" class="mx-auto mb-10" v-if="tabs == 3">
         <GmapMap
           :center="center"
           :zoom="zoom"
