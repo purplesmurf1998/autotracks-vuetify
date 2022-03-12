@@ -313,7 +313,7 @@ export default {
       this.loading = true;
       axios({
         method: "POST",
-        url: "http://localhost:5000/api/v1/utilities/geocode",
+        url: `${this.$store.state.baseApiUrl}/utilities/geocode`,
         data: {
           street: this.street,
           city: this.city,
