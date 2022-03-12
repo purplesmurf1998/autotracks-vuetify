@@ -72,11 +72,6 @@
           </v-list-item-action>
         </template>
       </v-combobox>
-      <v-checkbox
-        label="Property visible in the inventory"
-        v-model="visible"
-        hide-details
-      />
       <v-checkbox label="A value is required" v-model="required" />
       <v-textarea
         label="Description (optional)"
@@ -89,7 +84,7 @@
     <v-divider></v-divider>
     <v-card-actions>
       <v-spacer></v-spacer>
-      <v-btn color="primary" @click="create" rounded> Create </v-btn>
+      <v-btn color="primary" @click="save" rounded> Save </v-btn>
       <v-btn color="secondary" text @click="cancel" rounded> Cancel </v-btn>
     </v-card-actions>
   </v-card>
@@ -99,13 +94,16 @@
 const axios = require("axios");
 
 export default {
-  name: "AddDealershipProperty",
-
+  name: "EditDealershipProperty",
+  props: {
+    property: {
+      type: Object,
+      required: true,
+    },
+  },
   data: () => ({
     label: "",
     inputType: "",
-    options: "",
-    visible: true,
     required: true,
     description: "",
 
@@ -125,27 +123,28 @@ export default {
     y: 0,
   }),
   methods: {
-    create() {
-      let property = {
-        dealership: this.$store.state.loggedInUser.dealership,
+    save() {
+      let updatedProperty = {
         label: this.label,
         input_type: this.inputType,
-        options: [],
-        visible: this.visible,
         required: this.required,
         description: this.description,
+        options: [],
       };
 
       if (this.inputType == "Dropdown") {
         this.model.forEach((option) => {
-          property.options.push(option.text);
+          updatedProperty.options.push(option.text);
         });
       }
 
       axios
-        .post(`${this.$store.state.baseApiUrl}/properties`, property)
-        .then((response) => {
-          this.$emit("property-created", response);
+        .put(
+          `${this.$store.state.baseApiUrl}/properties/${this.property._id}`,
+          updatedProperty
+        )
+        .then(() => {
+          this.$emit("property-updated");
         })
         .catch((error) => {
           console.log(error);
@@ -196,6 +195,23 @@ export default {
         return v;
       });
     },
+  },
+  mounted() {
+    this.label = this.property.label;
+    this.inputType = this.property.input_type;
+    this.required = this.property.required;
+    this.description = this.property.description;
+
+    if (this.property.input_type == "Dropdown") {
+      let tempModel = [];
+      this.property.options.forEach((option) => {
+        tempModel.push({
+          text: option,
+          color: "primary",
+        });
+      });
+      this.model = tempModel;
+    }
   },
 };
 </script>

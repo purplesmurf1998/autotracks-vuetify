@@ -13,6 +13,7 @@ export default new Vuex.Store({
     sidebarShow: true,
     baseApiUrl: apiUrl,
     loggedInUser: null,
+    dealership: null,
     token: null
   },
   mutations,

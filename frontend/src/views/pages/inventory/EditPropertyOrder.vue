@@ -1,8 +1,13 @@
 <template>
   <v-card>
-    <v-card-title class="text-h6"> Update Property Order </v-card-title>
+    <v-card-title class="text-h6"> Edit Table Columns </v-card-title>
     <v-card-text>
-      <v-list dense>
+      <p>
+        Select and drag the columns to change their order in the inventory
+        table. Selecting the checkbox will make a column visible/invisible.
+      </p>
+      <v-divider />
+      <v-list dense rounded>
         <draggable
           v-model="properties"
           group="properties"
@@ -13,14 +18,19 @@
             v-for="item in properties"
             :key="item._id"
             style="cursor: pointer"
-            outline
           >
             <v-list-item-icon>
-              <v-chip color="primary" small>{{ item.position }}</v-chip>
+              <v-checkbox
+                v-model="item.visible"
+                hide-details
+                class="ma-0 pa-0"
+              />
             </v-list-item-icon>
 
             <v-list-item-content>
-              <v-list-item-title v-text="item.label"></v-list-item-title>
+              <v-list-item-title
+                v-text="item.property.label"
+              ></v-list-item-title>
             </v-list-item-content>
           </v-list-item>
         </draggable>
@@ -44,20 +54,16 @@ export default {
 
   data: () => ({
     properties: [],
+    propertyOrderId: null,
     drag: false,
   }),
   methods: {
     save() {
       axios
         .put(
-          `${this.$store.state.baseApiUrl}/properties/positions`,
+          `${this.$store.state.baseApiUrl}/properties/order/${this.propertyOrderId}`,
           {
-            properties: this.properties,
-          },
-          {
-            params: {
-              dealership: this.$store.state.loggedInUser.dealership,
-            },
+            order: this.properties,
           }
         )
         .then(() => {
@@ -72,13 +78,15 @@ export default {
     },
     fetchProperties() {
       axios
-        .get(`${this.$store.state.baseApiUrl}/properties`, {
+        .get(`${this.$store.state.baseApiUrl}/properties/order`, {
           params: {
             dealership: this.$store.state.loggedInUser.dealership,
+            user: this.$store.state.loggedInUser._id,
           },
         })
         .then((response) => {
-          this.properties = response.data.payload;
+          this.properties = response.data.payload.order;
+          this.propertyOrderId = response.data.payload._id;
         })
         .catch((error) => {
           console.log(error);

@@ -17,14 +17,6 @@ const PropertySchema = new mongoose.Schema({
     required: [true, 'Vehicle property must have an input type']
   },
   options: [String],
-  visible: {
-    type: Boolean,
-    default: true
-  },
-  position: {
-    type: Number,
-    required: [true, 'Vehicle property model must have a position']
-  },
   required: {
     type: Boolean,
     default: true

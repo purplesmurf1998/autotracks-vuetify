@@ -55,7 +55,6 @@
               <v-switch
                 v-model="selectedRolePermissions[item]"
                 @click="permissionToggled = !permissionToggled"
-                inset
                 color="primary"
                 class="pl-2 mt-0"
                 :label="item"
@@ -110,10 +109,10 @@
 <script>
 const axios = require("axios");
 
-import DeleteDialog from "../../../../components/DeleteDialog.vue";
+import DeleteDialog from "../../../components/DeleteDialog.vue";
 
 export default {
-  name: "DealershipRoles",
+  name: "RolesTable",
 
   data: () => ({
     selectedRoleIndex: 0,

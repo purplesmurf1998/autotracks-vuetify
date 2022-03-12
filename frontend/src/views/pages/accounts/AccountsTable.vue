@@ -1,10 +1,5 @@
 <template>
   <v-card width="90%" class="mx-auto mt-5">
-    <v-card-title>
-      <v-toolbar flat>
-        <v-toolbar-title>Accounts</v-toolbar-title>
-      </v-toolbar>
-    </v-card-title>
     <v-data-table
       :headers="headers"
       :items="accounts"
@@ -13,6 +8,7 @@
       :expanded.sync="expanded"
       item-key="_id"
       show-expand
+      class="mb-5"
     >
       <template v-slot:expanded-item="{ headers, item }">
         <td :colspan="headers.length">
@@ -27,7 +23,7 @@
 import AccountDetails from "./AccountDetails.vue";
 
 export default {
-  name: "DealershipAccounts",
+  name: "AccountsTable",
 
   data: () => ({
     expanded: [],

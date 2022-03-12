@@ -72,11 +72,6 @@
           </v-list-item-action>
         </template>
       </v-combobox>
-      <v-checkbox
-        label="Property visible in the inventory"
-        v-model="visible"
-        hide-details
-      />
       <v-checkbox label="A value is required" v-model="required" />
       <v-textarea
         label="Description (optional)"
@@ -89,30 +84,25 @@
     <v-divider></v-divider>
     <v-card-actions>
       <v-spacer></v-spacer>
-      <v-btn color="primary" @click="save" rounded> Save </v-btn>
+      <v-btn color="primary" @click="create" rounded> Create </v-btn>
       <v-btn color="secondary" text @click="cancel" rounded> Cancel </v-btn>
     </v-card-actions>
   </v-card>
 </template>
 
 <script>
-const axios = require('axios');
+const axios = require("axios");
 
 export default {
-  name: 'EditDealershipProperty',
-  props: {
-    property: {
-      type: Object,
-      required: true
-    }
-  },
+  name: "AddProperty",
+
   data: () => ({
-    label: '',
-    inputType: '',
-    visible: true,
+    label: "",
+    inputType: "",
+    options: "",
     required: true,
-    description: '',
-    
+    description: "",
+
     activator: null,
     attach: null,
     colors: ["green", "purple", "indigo", "cyan", "teal", "orange"],
@@ -129,32 +119,33 @@ export default {
     y: 0,
   }),
   methods: {
-    save() {
-      let updatedProperty = {
+    create() {
+      let property = {
+        dealership: this.$store.state.loggedInUser.dealership,
         label: this.label,
         input_type: this.inputType,
-        visible: this.visible,
+        options: [],
         required: this.required,
         description: this.description,
-        options: []
-      }
+      };
 
       if (this.inputType == "Dropdown") {
         this.model.forEach((option) => {
-          updatedProperty.options.push(option.text);
+          property.options.push(option.text);
         });
       }
 
       axios
-        .put(`${this.$store.state.baseApiUrl}/properties/${this.property._id}`, updatedProperty)
-        .then(() => {
-          this.$emit('property-updated');
-        }).catch(error => {
-          console.log(error);
+        .post(`${this.$store.state.baseApiUrl}/properties`, property)
+        .then((response) => {
+          this.$emit("property-created", response);
         })
+        .catch((error) => {
+          console.log(error);
+        });
     },
     cancel() {
-      this.$emit('cancel');
+      this.$emit("cancel");
     },
     edit(index, item) {
       if (!this.editing) {
@@ -199,27 +190,8 @@ export default {
       });
     },
   },
-  mounted() {
-    this.label = this.property.label;
-    this.inputType = this.property.input_type;
-    this.visible = this.property.visible;
-    this.required = this.property.required;
-    this.description = this.property.description;
-
-    if (this.property.input_type == 'Dropdown') {
-      let tempModel = [];
-      this.property.options.forEach(option => {
-        tempModel.push({
-          text: option,
-          color: 'primary'
-        })
-      });
-      this.model = tempModel;
-    }
-  }
-}
+};
 </script>
 
 <style>
-
 </style>

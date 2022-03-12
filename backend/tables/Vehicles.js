@@ -13,10 +13,30 @@ const VehicleSchema = new mongoose.Schema({
     minlength: [11, 'VIN must be 17 characters long, or at least 11 characters for vehicles manufactured before 1981'],
     maxlength: [17, 'VIN must be 17 characters long, or at least 11 characters for vehicles manufactured before 1981']
   },
-  on_road_since: Date,
+  on_road_since: {
+    type: Date,
+    default: null
+  },
   date_added: {
     type: Date,
     default: Date.now
+  },
+  location: {
+    type: {
+      zone: {
+        type: mongoose.Schema.ObjectId,
+        ref: 'Zones',
+      },
+      lat: {
+        type: Number,
+        required: [true, 'Vehicle location must have a latitude']
+      },
+      lng: {
+        type: Number,
+        required: [true, 'Vehicle location must have a longitude']
+      }
+    },
+    default: null
   },
   properties: Object
 })
