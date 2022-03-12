@@ -13,7 +13,6 @@
         <v-btn
           color="primary"
           text
-          rounded
           small
           v-if="!$vuetify.breakpoint.mobile"
           @click="editingPropertyOrder = true"
@@ -24,7 +23,6 @@
         <v-btn
           color="primary"
           text
-          rounded
           small
           v-if="!$vuetify.breakpoint.mobile"
           @click="addingVehicle = true"
@@ -32,13 +30,7 @@
           <v-icon left dark class="mr-2"> mdi-plus </v-icon>
           Add Vehicle
         </v-btn>
-        <v-btn
-          color="primary"
-          text
-          rounded
-          small
-          v-if="!$vuetify.breakpoint.mobile"
-        >
+        <v-btn color="primary" text small v-if="!$vuetify.breakpoint.mobile">
           <v-icon left dark> mdi-download-outline </v-icon>
           Export
         </v-btn>
@@ -53,7 +45,6 @@
               <v-btn
                 color="primary"
                 text
-                rounded
                 small
                 @click="editingPropertyOrder = true"
               >
@@ -62,19 +53,13 @@
               </v-btn>
             </v-list-item>
             <v-list-item>
-              <v-btn
-                color="primary"
-                text
-                rounded
-                small
-                @click="addingVehicle = true"
-              >
+              <v-btn color="primary" text small @click="addingVehicle = true">
                 <v-icon left dark class="mr-2"> mdi-plus </v-icon>
                 Add Vehicle
               </v-btn>
             </v-list-item>
             <v-list-item>
-              <v-btn color="primary" text rounded small>
+              <v-btn color="primary" text small>
                 <v-icon left dark class="mr-2"> mdi-download-outline </v-icon>
                 Export
               </v-btn>
@@ -101,7 +86,7 @@
               hide-details
             ></v-text-field>
             <v-spacer />
-            <v-btn color="primary" small>
+            <v-btn color="primary">
               <v-icon left class="mr-2"> mdi-plus </v-icon>
               Add Filter
             </v-btn>
@@ -142,12 +127,14 @@
     </v-card>
     <v-dialog
       v-model="showVehicleDetails"
+      max-width="800"
       @click:outside="clearSelectedVehicle"
     >
       <vehicle-details
         v-if="showVehicleDetails"
         :vehicleId="showVehicleDetails"
         :clearSelectedVehicle="clearSelectedVehicle"
+        @vehicle-deleted="vehicleDeleted"
       />
     </v-dialog>
     <v-dialog max-width="500" v-model="editingPropertyOrder">
@@ -199,6 +186,10 @@ export default {
     delivered: [],
   }),
   methods: {
+    vehicleDeleted() {
+      this.$router.replace({ query: {} });
+      this.fetchVehicles();
+    },
     vehicleAdded(vehicle) {
       console.log(vehicle);
       this.addingVehicle = false;

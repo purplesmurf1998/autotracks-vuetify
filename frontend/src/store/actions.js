@@ -1,4 +1,5 @@
 import Store from './index.js'
+import axios from 'axios'
 
 export default {
   async login(context, payload) {
@@ -51,25 +52,28 @@ export default {
 
     // if there is a token
     if (token) {
-      // verify the token is valid
-      const response = await fetch(`${Store.state.baseApiUrl}/auth/verify`, {
+      const response = await axios({
+        url: `${Store.state.baseApiUrl}/auth/verify`,
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ token })
-      });
+        data: {
+          token
+        }
+      })
 
-      const responseData = await response.json();
-      // token not valid or user not found
-      if (!response.ok) {
+      if (!response.data.success) {
         localStorage.clear('autotracksAuthToken');
       } else {
+        let dealership = response.data.payload.dealership;
+        let loggedInUser = response.data.payload;
+        loggedInUser.dealership = dealership._id;
         const data = {
-          token: responseData.token,
-          loggedInUser: responseData.payload
+          token: response.data.token,
+          loggedInUser,
+          dealership
         }
-
         // set the token in the local storage
         localStorage.setItem('autotracksAuthToken', data.token);
         // set the data in the store's state

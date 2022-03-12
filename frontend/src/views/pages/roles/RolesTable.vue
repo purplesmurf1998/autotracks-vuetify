@@ -55,7 +55,6 @@
               <v-switch
                 v-model="selectedRolePermissions[item]"
                 @click="permissionToggled = !permissionToggled"
-                inset
                 color="primary"
                 class="pl-2 mt-0"
                 :label="item"

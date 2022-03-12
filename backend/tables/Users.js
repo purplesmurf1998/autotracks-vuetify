@@ -29,7 +29,7 @@ const UserSchema = new mongoose.Schema({
   },
   dealership: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Dealership"
+    ref: "Dealerships"
   },
   owner: {
     type: Boolean,

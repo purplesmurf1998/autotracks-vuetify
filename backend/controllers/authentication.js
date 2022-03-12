@@ -90,7 +90,7 @@ exports.verify = asyncHandler(async (req, res, next) => {
         }
 
         // valid token, find the user and return in the response
-        const user = await Users.findById(decoded.userId);
+        const user = await Users.findById(decoded.userId).populate('dealership');
 
         // user not found
         if (!user) {

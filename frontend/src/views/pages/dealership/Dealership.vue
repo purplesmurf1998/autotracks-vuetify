@@ -10,9 +10,9 @@
       >
         <v-toolbar-title>Dealership</v-toolbar-title>
         <v-spacer />
-        <v-btn color="primary" text rounded small>
-          <v-icon left dark> mdi-swap-horizontal </v-icon>
-          Change Dealerships
+        <v-btn color="primary" text small @click="addingDealership = true">
+          <v-icon left dark> mdi-plus </v-icon>
+          Create New Dealership
         </v-btn>
       </v-toolbar>
       <v-card width="90%" class="mx-auto" style="margin-top: -49px">
@@ -24,7 +24,8 @@
         <v-card-text>
           <v-row class="pa-2" align="center">
             <p class="mb-0">
-              {{ dealershipCount }} / 5 roles created for this account plan
+              {{ dealershipCount }} / 5 dealerships created for this account
+              plan
             </p>
             <v-spacer />
             <v-btn color="primary"> Upgrade Plan </v-btn>
@@ -33,11 +34,25 @@
       </v-card>
     </v-card>
     <dealership-details id="dealership-details" v-if="activeTab == 0" />
+    <dealerships-table ref="dealershipTable" v-if="activeTab == 1" />
+    <v-dialog
+      transition="dialog-bottom-transition"
+      width="500"
+      v-model="addingDealership"
+    >
+      <add-dealership
+        v-if="addingDealership"
+        @cancel="addingDealership = false"
+        @dealership-added="dealershipAdded"
+      />
+    </v-dialog>
   </div>
 </template>
 
 <script>
 import DealershipDetails from "./DealershipDetails.vue";
+import DealershipsTable from "./DealershipsTable.vue";
+import AddDealership from "./AddDealership.vue";
 
 export default {
   name: "Dealership",
@@ -45,14 +60,21 @@ export default {
   data: () => ({
     activeTab: 0,
     dealershipCount: 1,
+    addingDealership: false,
   }),
   methods: {
+    dealershipAdded() {
+      this.$refs.dealershipTable.fetchDealerships();
+      this.addingDealership = false;
+    },
     setActiveTab(value) {
       this.activeTab = value;
     },
   },
   components: {
     DealershipDetails,
+    DealershipsTable,
+    AddDealership,
   },
 };
 </script>

@@ -21,6 +21,23 @@ const VehicleSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   },
+  location: {
+    type: {
+      zone: {
+        type: mongoose.Schema.ObjectId,
+        ref: 'Zones',
+      },
+      lat: {
+        type: Number,
+        required: [true, 'Vehicle location must have a latitude']
+      },
+      lng: {
+        type: Number,
+        required: [true, 'Vehicle location must have a longitude']
+      }
+    },
+    default: null
+  },
   properties: Object
 })
 

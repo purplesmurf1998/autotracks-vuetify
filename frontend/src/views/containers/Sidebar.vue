@@ -7,6 +7,9 @@
             <v-list-item-title class="text-h6 d-flex justify-center">
               Autotracks
             </v-list-item-title>
+            <v-list-item-subtitle class="d-flex justify-center">
+              {{ $store.state.dealership.name }}
+            </v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
 
