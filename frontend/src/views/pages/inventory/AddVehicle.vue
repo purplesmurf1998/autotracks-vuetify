@@ -7,7 +7,7 @@
       /></v-row>
 
       <v-form
-        v-if="fields.length > 0"
+        v-if="fields.length > 0 && vehicle"
         ref="vehicleForm"
         v-model="vehicleFormValid"
         lazy-validation
@@ -18,7 +18,7 @@
             outlined
             dense
             :label="field.label"
-            v-model="vehicle[field.key]"
+            v-model="vehicle[field.key].value"
             append-icon="mdi-alphabetical"
             :rules="fieldRules[field.key]"
           />
@@ -27,7 +27,7 @@
             outlined
             dense
             :label="field.label"
-            v-model="vehicle[field.key]"
+            v-model="vehicle[field.key].value"
             type="number"
             append-icon="mdi-sort-numeric-variant"
             :rules="fieldRules[field.key]"
@@ -37,7 +37,7 @@
             outlined
             dense
             :label="field.label"
-            v-model="vehicle[field.key]"
+            v-model="vehicle[field.key].value"
             type="number"
             append-icon="mdi-currency-usd"
             :rules="fieldRules[field.key]"
@@ -53,7 +53,7 @@
           >
             <template v-slot:activator="{ on, attrs }">
               <v-text-field
-                v-model="vehicle[field.key]"
+                v-model="vehicle[field.key].value"
                 :label="field.label"
                 append-icon="mdi-calendar"
                 v-bind="attrs"
@@ -63,7 +63,7 @@
                 :rules="fieldRules[field.key]"
               />
             </template>
-            <v-date-picker v-model="vehicle[field.key]" no-title scrollable>
+            <v-date-picker v-model="vehicle[field.key].value" no-title scrollable>
               <v-spacer></v-spacer>
               <v-btn text color="primary" @click="cancelDate(field.key)">
                 Cancel
@@ -76,7 +76,7 @@
           <v-select
             outlined
             dense
-            v-model="vehicle[field.key]"
+            v-model="vehicle[field.key].value"
             :items="field.options"
             :label="field.label"
             v-if="field.input_type == 'Dropdown'"
@@ -84,7 +84,7 @@
             :rules="fieldRules[field.key]"
           />
           <v-combobox
-            v-model="vehicle[field.key]"
+            v-model="vehicle[field.key].value"
             :filter="filter"
             :hide-no-data="!search"
             :items="items"
@@ -188,7 +188,7 @@ export default {
       if (this.$refs.vehicleForm.validate()) this.save();
     },
     cancelDate(key) {
-      this.vehicle[key] = "";
+      this.vehicle[key].value = "";
       this.dateMenus[key] = false;
     },
     save() {
@@ -196,11 +196,11 @@ export default {
       let properties = this.vehicle;
       let vin = properties.vin;
       delete properties.vin;
-      //
+      
       axios
         .post(`${this.$store.state.baseApiUrl}/vehicles`, {
           dealership: this.$store.state.loggedInUser.dealership,
-          vin,
+          vin: vin.value,
           properties,
         })
         .then((response) => {
@@ -231,7 +231,11 @@ export default {
             key: "vin",
             required: true,
           });
-          tempVehicle["vin"] = "";
+          tempVehicle["vin"] = {
+            label: "VIN",
+            value: "",
+            input_type: "Text"
+          };
           tempFieldRules["vin"] = [(v) => !!v || "VIN is required"];
           response.data.payload.forEach((property) => {
             tempFields.push({
@@ -241,7 +245,11 @@ export default {
               required: property.required,
               options: property.options,
             });
-            tempVehicle[property.key] = "";
+            tempVehicle[property.key] = {
+              label: property.label,
+              value: "",
+              input_type: property.input_type
+            };
             if (property.input_type == "Date") {
               tempDateMenus[property.key] = false;
             }
@@ -251,12 +259,12 @@ export default {
               ];
             }
             if (property.input_type == "List") {
-              tempVehicle[property.key] = [];
-              this.$watch(`vehicle.${property.key}`, (val, prev) => {
+              tempVehicle[property.key].value = [];
+              this.$watch(`vehicle.${property.key}.value`, (val, prev) => {
                 if (!prev) return;
                 if (val.length === prev.length) return;
 
-                this.vehicle[property.key] = val.map((v) => {
+                this.vehicle[property.key].value = val.map((v) => {
                   return v;
                 });
               });
@@ -266,6 +274,7 @@ export default {
           this.vehicle = tempVehicle;
           this.dateMenus = tempDateMenus;
           this.fieldRules = tempFieldRules;
+          console.log(this.vehicle);
         })
         .catch((error) => {
           console.log(error);

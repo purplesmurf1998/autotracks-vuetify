@@ -203,7 +203,6 @@ export default {
     results: 0,
     center: { lat: 45.431311, lng: -73.479005 },
     zoom: 11,
-    radius: 5,
     editingPropertyOrder: false,
     addingVehicle: false,
     headers: [],
@@ -216,7 +215,8 @@ export default {
       const vehicle = this.inventory.find(
         (vehicle) => vehicle._id == this.$route.query.vehicle
       );
-      this.clearSelectedVehicle();
+      //this.clearSelectedVehicle();
+      this.$router.push('/inventory')
       this.tabs = 3;
       this.search = vehicle.vin;
     },
@@ -296,7 +296,11 @@ export default {
         .then((response) => {
           let tempInventory = [];
           response.data.payload.forEach((vehicle) => {
-            let properties = vehicle.properties;
+            // eslint-disable-next-line no-unused-vars
+            let properties = Object.keys(vehicle.properties).reduce((result, item, index) => {
+              result[item] = vehicle.properties[item].value;
+              return result;
+            }, {});
             properties.vin = vehicle.vin;
             properties._id = vehicle._id;
             properties.location = vehicle.location;
@@ -337,7 +341,7 @@ export default {
       return this.$route.query.vehicle;
     },
     filteredMapInventory() {
-      return this.inventory.filter((vehicle) => {
+      let vehicles = this.inventory.filter((vehicle) => {
         if (this.search == "" || !this.search) return vehicle.location;
         if (vehicle.location) {
           // eslint-disable-next-line no-unused-vars
@@ -346,17 +350,27 @@ export default {
           }
         }
       });
-    },
-    mapCenter() {
-      if (
-        this.filteredMapInventory.length == 0 ||
-        this.search == "" ||
-        !this.search
-      )
-        return;
 
-      return this.getLatLng(this.filteredMapInventory[0].location);
+      return vehicles;
     },
+  },
+  watch: {
+    filteredMapInventory(newVal) {
+      let newCenter = {};
+      if (newVal.length == 0) {
+        newCenter.lat = this.$store.state.dealership.lat;
+        newCenter.lng = this.$store.state.dealership.lng;
+      } else {
+        newCenter.lat = newVal[0].location.lat;
+        newCenter.lng = newVal[0].location.lng;
+      }
+      this.center = newCenter;
+    },
+    showVehicleDetails(newVal) {
+      if (newVal) {
+        this.tabs = 0;
+      }
+    }
   },
   mounted() {
     this.fetchHeaders();
