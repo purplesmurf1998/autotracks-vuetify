@@ -242,14 +242,14 @@
                 </v-btn>
               </v-card-actions>
             </v-card>
+            <v-container v-if="!loading" class="mt-5">
+              <v-progress-linear
+                :value="progress"
+                color="primary"
+                rounded
+              ></v-progress-linear>
+            </v-container>
           </v-col>
-          <v-container v-if="!loading">
-            <v-progress-linear
-              :value="progress"
-              color="primary"
-              rounded
-            ></v-progress-linear>
-          </v-container>
         </v-container>
       </v-main>
     </v-app>
