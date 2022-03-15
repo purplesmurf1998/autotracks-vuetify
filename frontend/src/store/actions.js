@@ -52,20 +52,18 @@ export default {
 
     // if there is a token
     if (token) {
-      const response = await axios({
-        url: `${Store.state.baseApiUrl}/auth/verify`,
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        data: {
-          token
-        }
-      })
+      try {
+        const response = await axios({
+          url: `${Store.state.baseApiUrl}/auth/verify`,
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          data: {
+            token
+          }
+        })
 
-      if (!response.data.success) {
-        localStorage.clear('autotracksAuthToken');
-      } else {
         let dealership = response.data.payload.dealership;
         let loggedInUser = response.data.payload;
         loggedInUser.dealership = dealership._id;
@@ -78,6 +76,8 @@ export default {
         localStorage.setItem('autotracksAuthToken', data.token);
         // set the data in the store's state
         context.commit('setUser', data);
+      } catch (error) {
+        localStorage.clear('autotracksAuthToken');
       }
     }
   }

@@ -84,6 +84,7 @@
               prepend-inner-icon="mdi-magnify"
               placeholder="Search by serial number, stock number, model etc."
               hide-details
+              clearable
             ></v-text-field>
             <v-spacer />
             <v-btn color="primary">
@@ -94,8 +95,23 @@
         </v-card-text>
       </v-card>
       <div style="width: 90%" class="mx-auto">
-        <v-chip small color="primary" class="my-5 text-caption" rounded>
+        <v-chip
+          small
+          color="primary"
+          class="my-5 text-caption"
+          rounded
+          v-if="tabs < 3"
+        >
           {{ results }} result(s)
+        </v-chip>
+        <v-chip
+          small
+          color="primary"
+          class="my-5 text-caption"
+          rounded
+          v-if="tabs == 3"
+        >
+          {{ filteredMapInventory.length }} result(s)
         </v-chip>
         <v-chip small color="secondary" class="my-5 ml-3 text-caption" rounded>
           No filters
@@ -113,7 +129,7 @@
       </v-card>
       <v-card width="90%" class="mx-auto mb-10" v-if="tabs == 3">
         <GmapMap
-          :center="center"
+          :center.sync="center"
           :zoom="zoom"
           ref="mapRef"
           style="height: 600px"
@@ -122,7 +138,15 @@
             fullscreenControl: true,
             rotateControl: false,
           }"
-        ></GmapMap>
+        >
+          <GmapMarker
+            :key="index"
+            v-for="(v, index) in filteredMapInventory"
+            :position="getLatLng(v.location)"
+            :clickable="true"
+            @click="center = getLatLng(v.location)"
+          />
+        </GmapMap>
       </v-card>
     </v-card>
     <v-dialog
@@ -135,6 +159,7 @@
         :vehicleId="showVehicleDetails"
         :clearSelectedVehicle="clearSelectedVehicle"
         @vehicle-deleted="vehicleDeleted"
+        @show-vehicle-location="viewVehicleLocation"
       />
     </v-dialog>
     <v-dialog max-width="500" v-model="editingPropertyOrder">
@@ -177,7 +202,8 @@ export default {
     filters: [],
     results: 0,
     center: { lat: 45.431311, lng: -73.479005 },
-    zoom: 19,
+    zoom: 11,
+    radius: 5,
     editingPropertyOrder: false,
     addingVehicle: false,
     headers: [],
@@ -186,6 +212,22 @@ export default {
     delivered: [],
   }),
   methods: {
+    viewVehicleLocation() {
+      const vehicle = this.inventory.find(
+        (vehicle) => vehicle._id == this.$route.query.vehicle
+      );
+      this.clearSelectedVehicle();
+      this.tabs = 3;
+      this.search = vehicle.vin;
+    },
+    getLatLng(location) {
+      if (!location) return null;
+      console.log(location);
+      return {
+        lat: location.lat,
+        lng: location.lng,
+      };
+    },
     vehicleDeleted() {
       this.$router.replace({ query: {} });
       this.fetchVehicles();
@@ -257,9 +299,14 @@ export default {
             let properties = vehicle.properties;
             properties.vin = vehicle.vin;
             properties._id = vehicle._id;
+            properties.location = vehicle.location;
             tempInventory.push(properties);
           });
           this.inventory = tempInventory;
+          this.center = {
+            lat: this.inventory[0].location.lat,
+            lng: this.inventory[0].location.lng,
+          };
         })
         .catch((error) => {
           console.log(error);
@@ -288,6 +335,27 @@ export default {
     },
     showVehicleDetails() {
       return this.$route.query.vehicle;
+    },
+    filteredMapInventory() {
+      return this.inventory.filter((vehicle) => {
+        if (this.search == "" || !this.search) return vehicle.location;
+        if (vehicle.location) {
+          // eslint-disable-next-line no-unused-vars
+          for (const [key, value] of Object.entries(vehicle)) {
+            if (value.toString().startsWith(this.search)) return true;
+          }
+        }
+      });
+    },
+    mapCenter() {
+      if (
+        this.filteredMapInventory.length == 0 ||
+        this.search == "" ||
+        !this.search
+      )
+        return;
+
+      return this.getLatLng(this.filteredMapInventory[0].location);
     },
   },
   mounted() {

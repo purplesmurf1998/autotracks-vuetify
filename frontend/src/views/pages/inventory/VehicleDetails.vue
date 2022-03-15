@@ -12,7 +12,7 @@
           </template>
 
           <v-list dense>
-            <v-list-item small>
+            <v-list-item small @click="showVehicleLocation">
               <v-list-item-title class="font-weight-regular"
                 >View location on map</v-list-item-title
               >
@@ -70,6 +70,9 @@ export default {
     deletingVehicle: false,
   }),
   methods: {
+    showVehicleLocation() {
+      this.$emit("show-vehicle-location");
+    },
     confirmDeleteVehicle() {
       axios
         .delete(`${this.$store.state.baseApiUrl}/vehicles/${this.vehicleId}`)

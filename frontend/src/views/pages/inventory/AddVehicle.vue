@@ -253,6 +253,7 @@ export default {
             if (property.input_type == "List") {
               tempVehicle[property.key] = [];
               this.$watch(`vehicle.${property.key}`, (val, prev) => {
+                if (!prev) return;
                 if (val.length === prev.length) return;
 
                 this.vehicle[property.key] = val.map((v) => {
