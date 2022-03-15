@@ -1,4 +1,5 @@
 const Dealerships = require('../tables/Dealerships');
+const PropertyOrders = require('../tables/PropertyOrders');
 const Users = require('../tables/Users');
 const Roles = require('../tables/Roles');
 const ErrorResponse = require('../utils/errorResponse');
@@ -389,9 +390,14 @@ exports.createDealership = asyncHandler(async (req, res, next) => {
   ];
 
   for (let i = 0; i < temp_roles.length; i++) {
-    const new_role = await Roles.create(temp_roles[i]);
-    console.log(new_role);
+    await Roles.create(temp_roles[i]);
   }
+
+  // create new order of properties for the owner and this dealership
+  await PropertyOrders.create({
+    dealership: dealership._id,
+    user: user._id,
+  })
 
   // send response
   res.status(201).json({
