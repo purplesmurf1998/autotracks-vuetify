@@ -100,7 +100,7 @@
               </template>
 
               <v-list dense>
-                <v-list-item small>
+                <v-list-item small @click="editingVehicle = true">
                   <v-list-item-icon class="mr-2">
                     <v-icon>mdi-pencil</v-icon>
                   </v-list-item-icon>
@@ -124,6 +124,15 @@
               <p class="font-weight-light mb-0">{{ getFormattedValue(vehicle.properties[property]) }}</p>
             </v-row>
           </v-card-text>
+          <v-alert
+            :color="messageType"
+            v-if="message"
+            text
+            outlined
+            dense
+          >
+            {{ message }}
+          </v-alert>
         </v-card>
       </v-card-text>
       <v-divider v-if="!loading"></v-divider>
@@ -140,9 +149,17 @@
       >
         <delete-dialog
           dialogContent="Are you certain you want to delete this vehicle from the inventory?"
-          v-on:confirm="confirmDeleteVehicle"
-          v-on:cancel="deletingVehicle = false"
+          @confirm="confirmDeleteVehicle"
+          @cancel="deletingVehicle = false"
         ></delete-dialog>
+      </v-dialog>
+      <v-dialog max-width="500" v-model="editingVehicle">
+        <edit-vehicle
+          v-if="editingVehicle"
+          :vehicle="vehicle"
+          @cancel="editingVehicle = false"
+          @vehicle-updated="vehicleUpdated"
+        />
       </v-dialog>
     </v-card>
   </div>
@@ -151,6 +168,7 @@
 <script>
 import axios from "axios";
 import DeleteDialog from "../../../components/DeleteDialog.vue";
+import EditVehicle from "./EditVehicle.vue";
 
 export default {
   name: "VehicleDetails",
@@ -166,8 +184,11 @@ export default {
   },
   data: () => ({
     deletingVehicle: false,
+    editingVehicle: false,
     vehicle: null,
     loading: true,
+    message: null,
+    messageType: null
   }),
   methods: {
     getFormattedValue(property) {
@@ -183,6 +204,11 @@ export default {
     },
     showVehicleLocation() {
       this.$emit("show-vehicle-location");
+    },
+    vehicleUpdated(updatedVehicle) {
+      this.vehicle.properties = updatedVehicle.properties;
+      this.editingVehicle = false;
+      this.showMessage('success', 'Vehicle properties have been updated successfully.');
     },
     confirmDeleteVehicle() {
       axios
@@ -204,13 +230,22 @@ export default {
         .catch(error => {
           console.log(error);
         })
-    }
+    },
+    showMessage(type, message) {
+      this.messageType = type;
+      this.message = message;
+      setTimeout(() => {
+        this.message = null;
+        this.messageType = null;
+      }, 4000);
+    },
   },
   mounted() {
     this.fetchVehicle();
   },
   components: {
     DeleteDialog,
+    EditVehicle
   },
 };
 </script>

@@ -202,7 +202,7 @@ export default {
     filters: [],
     results: 0,
     center: { lat: 45.431311, lng: -73.479005 },
-    zoom: 11,
+    zoom: 17,
     editingPropertyOrder: false,
     addingVehicle: false,
     headers: [],
@@ -356,6 +356,8 @@ export default {
   },
   watch: {
     filteredMapInventory(newVal) {
+      if (!this.$refs.mapRef) return;
+
       let newCenter = {};
       if (newVal.length == 0) {
         newCenter.lat = this.$store.state.dealership.lat;
@@ -364,7 +366,7 @@ export default {
         newCenter.lat = newVal[0].location.lat;
         newCenter.lng = newVal[0].location.lng;
       }
-      this.center = newCenter;
+      this.$refs.mapRef.panTo(newCenter);
     },
     showVehicleDetails(newVal) {
       if (newVal) {
@@ -374,6 +376,10 @@ export default {
   },
   mounted() {
     this.fetchHeaders();
+    this.center = {
+      lat: this.$store.state.dealership.lat,
+      lng: this.$store.state.dealership.lng,
+    }
   },
   components: {
     VehicleDetails,

@@ -3,13 +3,16 @@ const router = express.Router();
 
 // get the methods from the authenticationController
 const {
+  createUser,
   getUsers,
   getUser,
   updateUser
 } = require('../controllers/users');
 
 // attach methods to the proper routes
-router.route('/').get(getUsers);
+router.route('/')
+  .post(createUser)
+  .get(getUsers);
 
 router.route('/:userId')
   .get(getUser)

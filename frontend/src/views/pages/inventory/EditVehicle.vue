@@ -1,13 +1,11 @@
 <template>
-  <v-card>
-    <v-card-title class="text-h6"> Add Vehicle </v-card-title>
-    <v-card-text>
-      <v-row align="center" v-if="fields.length == 0"
-        ><v-progress-circular indeterminate color="primary" class="mx-auto"
-      /></v-row>
-
-      <v-form
-        v-if="fields.length > 0 && vehicle"
+<v-card>
+	<v-card-title>
+		Edit Vehicle Properties
+	</v-card-title>
+	<v-card-text>
+		<v-form
+        v-if="fields.length > 0"
         ref="vehicleForm"
         v-model="vehicleFormValid"
         lazy-validation
@@ -18,7 +16,7 @@
             outlined
             dense
             :label="field.label"
-            v-model="vehicle[field.key].value"
+            v-model="vehicleProperties[field.key].value"
             append-icon="mdi-alphabetical"
             :rules="fieldRules[field.key]"
           />
@@ -27,7 +25,7 @@
             outlined
             dense
             :label="field.label"
-            v-model="vehicle[field.key].value"
+            v-model="vehicleProperties[field.key].value"
             type="number"
             append-icon="mdi-sort-numeric-variant"
             :rules="fieldRules[field.key]"
@@ -37,7 +35,7 @@
             outlined
             dense
             :label="field.label"
-            v-model="vehicle[field.key].value"
+            v-model="vehicleProperties[field.key].value"
             type="number"
             append-icon="mdi-currency-usd"
             :rules="fieldRules[field.key]"
@@ -53,7 +51,7 @@
           >
             <template v-slot:activator="{ on, attrs }">
               <v-text-field
-                v-model="vehicle[field.key].value"
+                v-model="vehicleProperties[field.key].value"
                 :label="field.label"
                 append-icon="mdi-calendar"
                 v-bind="attrs"
@@ -63,7 +61,7 @@
                 :rules="fieldRules[field.key]"
               />
             </template>
-            <v-date-picker v-model="vehicle[field.key].value" no-title scrollable>
+            <v-date-picker v-model="vehicleProperties[field.key].value" no-title scrollable>
               <v-spacer></v-spacer>
               <v-btn text color="primary" @click="cancelDate(field.key)">
                 Cancel
@@ -76,7 +74,7 @@
           <v-select
             outlined
             dense
-            v-model="vehicle[field.key].value"
+            v-model="vehicleProperties[field.key].value"
             :items="field.options"
             :label="field.label"
             v-if="field.input_type == 'Dropdown'"
@@ -84,7 +82,7 @@
             :rules="fieldRules[field.key]"
           />
           <v-combobox
-            v-model="vehicle[field.key].value"
+            v-model="vehicleProperties[field.key].value"
             :filter="filter"
             :hide-no-data="!search"
             :items="items"
@@ -146,69 +144,70 @@
           </v-combobox>
         </div>
       </v-form>
-    </v-card-text>
-    <v-divider></v-divider>
-    <v-card-actions>
-      <v-spacer></v-spacer>
-      <v-btn color="primary" @click="validateVehicleForm"> Save </v-btn>
-      <v-btn color="secondary" text @click="cancel"> Cancel </v-btn>
-    </v-card-actions>
-  </v-card>
+	</v-card-text>
+	<v-divider></v-divider>
+	<v-card-actions>
+		<v-spacer></v-spacer>
+			<v-btn color="primary" @click="validateVehicleForm">
+				Save Changes
+			</v-btn>
+		<v-btn color="secondary" text @click="cancel">
+			Cancel
+		</v-btn>
+	</v-card-actions>
+</v-card>
 </template>
 
 <script>
-const axios = require("axios");
+import axios from "axios";
 
 export default {
-  name: "AddVehicle",
-
-  data: () => ({
-    fields: [],
-    vehicle: {},
-    fieldRules: {},
-    dateMenus: {},
-    vehicleFormValid: true,
-
-    activator: null,
+	name: 'EditVehicle',
+	props: {
+		vehicle: {
+			type: Object,
+			required: true
+		}
+	},
+	data: () => ({
+		vehicleProperties: null,
+		fields: [],
+		fieldRules: {},
+		dateMenus: {},
+		vehicleFormValid: true,
+		activator: null,
     editing: null,
     editingIndex: -1,
     items: [
       { header: "Start typing in the field to create a dropdown option" },
     ],
     search: null,
-  }),
-  methods: {
-    validateVehicleForm() {
+	}),
+	methods: {
+		validateVehicleForm() {
       if (this.$refs.vehicleForm.validate()) this.save();
     },
-    cancelDate(key) {
-      this.vehicle[key].value = "";
-      this.dateMenus[key] = false;
-    },
-    save() {
-      // remove the vin from the vehicle object
-      let properties = this.vehicle;
-      let vin = properties.vin;
-      delete properties.vin;
-      
-      axios
-        .post(`${this.$store.state.baseApiUrl}/vehicles`, {
-          dealership: this.$store.state.loggedInUser.dealership,
-          vin: vin.value,
-          properties,
+		save() {
+			axios
+        .put(`${this.$store.state.baseApiUrl}/vehicles/${this.vehicle._id}`, {
+          properties: this.vehicleProperties
         })
         .then((response) => {
-          this.$emit("vehicle-added", response.data.payload);
+          this.$emit("vehicle-updated", response.data.payload);
         })
         .catch((error) => {
           console.log(error);
         });
+		},
+    cancelDate(key) {
+      this.vehicleProperties[key].value = "";
+      this.dateMenus[key] = false;
     },
-    cancel() {
+		cancel() {
       this.$emit("cancel");
     },
-    fetchProperties() {
-      axios
+		fetchProperties() {
+			axios
         .get(`${this.$store.state.baseApiUrl}/properties`, {
           params: {
             dealership: this.$store.state.loggedInUser.dealership,
@@ -216,21 +215,8 @@ export default {
         })
         .then((response) => {
           let tempFields = [];
-          let tempVehicle = {};
           let tempDateMenus = {};
           let tempFieldRules = {};
-          tempFields.push({
-            label: "VIN",
-            input_type: "Text",
-            key: "vin",
-            required: true,
-          });
-          tempVehicle["vin"] = {
-            label: "VIN",
-            value: "",
-            input_type: "Text"
-          };
-          tempFieldRules["vin"] = [(v) => !!v || "VIN is required"];
           response.data.payload.forEach((property) => {
             tempFields.push({
               label: property.label,
@@ -239,11 +225,6 @@ export default {
               required: property.required,
               options: property.options,
             });
-            tempVehicle[property.key] = {
-              label: property.label,
-              value: "",
-              input_type: property.input_type
-            };
             if (property.input_type == "Date") {
               tempDateMenus[property.key] = false;
             }
@@ -253,27 +234,25 @@ export default {
               ];
             }
             if (property.input_type == "List") {
-              tempVehicle[property.key].value = [];
-              this.$watch(`vehicle.${property.key}.value`, (val, prev) => {
+              this.$watch(`vehicleProperties.${property.key}.value`, (val, prev) => {
                 if (!prev) return;
                 if (val.length === prev.length) return;
 
-                this.vehicle[property.key].value = val.map((v) => {
+                this.vehicleProperties[property.key].value = val.map((v) => {
                   return v;
                 });
               });
             }
           });
           this.fields = tempFields;
-          this.vehicle = tempVehicle;
           this.dateMenus = tempDateMenus;
           this.fieldRules = tempFieldRules;
         })
         .catch((error) => {
           console.log(error);
         });
-    },
-    edit(index, item) {
+		},
+		edit(index, item) {
       if (!this.editing) {
         this.editing = item;
         this.editingIndex = index;
@@ -295,12 +274,15 @@ export default {
         -1
       );
     },
-  },
-  mounted() {
-    this.fetchProperties();
-  },
-};
+	},
+	mounted() {
+		// prevent from two-binding with the parent component
+		this.vehicleProperties = JSON.parse(JSON.stringify(this.vehicle.properties))
+		this.fetchProperties();
+	}
+}
 </script>
 
 <style>
+
 </style>

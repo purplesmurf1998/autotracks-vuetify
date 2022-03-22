@@ -71,6 +71,7 @@
       :zoom="17"
       ref="mapRef"
       style="height: 500px"
+      class="mb-5"
       :options="{
         streetViewControl: false,
         fullscreenControl: true,

@@ -10,7 +10,7 @@
       >
         <v-toolbar-title>Zones</v-toolbar-title>
         <v-spacer />
-        <v-btn color="primary" text rounded small @click="addZone">
+        <v-btn color="primary" text @click="addZone">
           <v-icon left dark> mdi-plus </v-icon>
           Add Zone
         </v-btn>

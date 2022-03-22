@@ -1,4 +1,6 @@
 const Users = require('../tables/Users');
+const Properties = require('../tables/Properties');
+const PropertyOrders = require('../tables/PropertyOrders');
 const ErrorResponse = require('../utils/errorResponse');
 const asyncHandler = require('../middleware/async');
 const advancedFilter = require('../utils/advancedFilter');
@@ -6,55 +8,53 @@ const advancedFilter = require('../utils/advancedFilter');
 // @desc    Create a new user
 // @route   POST /api/v1/users
 // @access  Public
-// exports.createUser = asyncHandler(async (req, res, next) => {
-//   // make sure the user being created is not an admin
-//   if (req.body.role == 'Administration') {
-//     return next(
-//       new ErrorResponse('Admin accounts can only be registered from the register page.', 400)
-//     );
-//   }
+exports.createUser = asyncHandler(async (req, res, next) => {
+  // make sure the user being created is not an admin
+  if (req.body.role == 'Administration') {
+    return next(
+      new ErrorResponse('Admin accounts can only be registered from the register page.', 400)
+    );
+  }
 
-//   // make sure there is a dealership attached to this user
-//   if (!req.body.dealership) {
-//     return next(
-//       new ErrorResponse('Staff users need to be associated to a dealership.', 400)
-//     );
-//   }
+  const user = await Users.create(req.body);
 
-//   // grab the user passed in the auth token and make sure they have "Add Staff Users" permission
-//   const loggedUser = req.user;
-//   var flag = loggedUser.permissions.includes("Add Staff Users");
-//   if (!loggedUser || !flag) {
-//     return next(
-//       new ErrorResponse('Unauthorized to make these changes', 401)
-//     );
-//   }
+  if (!user) {
+    return next(
+      new ErrorResponse('Unable to create the user', 500)
+    );
+  }
 
-//   // set the tutorials completed for staff users so they don't
-//   // get the notifications
-//   const body = req.body;
-//   body.createDealershipCompleted = true;
-//   body.createUserCompleted = true;
-//   body.promptPasswordChange = true;
+  // create the default property order for the user with all dealership properties active
+  // 1. grab the dealership id and fetch the currently existing properties
+  const properties = await Properties.find({ dealership: user.dealership });
+  let order = [];
+  properties.forEach(property => {
+    order.push({
+      property: property._id,
+      visible: true
+    });
+  });
+  let propertyOrderObj = {
+    dealership: user.dealership,
+    user: user._id,
+    order
+  }
+  // 2. create the new property order
+  const propertyOrder = await PropertyOrders.create(propertyOrderObj);
 
-//   // create new user with the data passed in the request body
-//   const user = new User(body);
+  if (!propertyOrder) {
+    // delete the user
+    await Users.findByIdAndDelete(user._id);
+    return next(
+      new ErrorResponse('Unable to create the property order', 500)
+    );
+  }
 
-//   // if the admin is creating their first staff account, set the tutorial flag to completed
-//   if (!loggedUser.createUserCompleted) {
-//     await User.findByIdAndUpdate(loggedUser._id, { createUserCompleted: true }, {
-//       new: true,
-//       runValidators: true
-//     });
-//   }
-
-//   // send response
-//   await user.save();
-//   res.status(201).json({
-//     success: true,
-//     payload: user
-//   });
-// });
+  res.status(201).json({
+    success: true,
+    payload: user
+  });
+});
 
 // @desc    Get a a list of users based on query parameters
 // @route   GET /api/v1/users
