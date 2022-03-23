@@ -84,8 +84,8 @@
     <v-divider></v-divider>
     <v-card-actions>
       <v-spacer></v-spacer>
-      <v-btn color="primary" @click="create" rounded> Create </v-btn>
-      <v-btn color="secondary" text @click="cancel" rounded> Cancel </v-btn>
+      <v-btn color="primary" @click="create"> Create </v-btn>
+      <v-btn color="secondary" text @click="cancel"> Cancel </v-btn>
     </v-card-actions>
   </v-card>
 </template>

@@ -103,6 +103,7 @@ export default {
       {
         text: "Actions",
         value: "actions",
+        align: "center",
         sortable: false,
       },
     ],
@@ -154,7 +155,7 @@ export default {
             dealership: this.$store.state.loggedInUser.dealership,
           },
         })
-        .then((response) => {
+        .then(response => {
           this.properties = response.data.payload;
         })
         .catch((error) => {

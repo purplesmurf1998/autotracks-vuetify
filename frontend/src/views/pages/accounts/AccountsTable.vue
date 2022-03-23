@@ -1,84 +1,56 @@
 <template>
-  <v-card width="90%" class="mx-auto mt-5">
-    <v-data-table
-      :headers="headers"
-      :items="accounts"
-      :items-per-page="5"
-      :single-expand="true"
-      :expanded.sync="expanded"
-      item-key="_id"
-      show-expand
-      class="mb-5"
+  <div>
+    <v-alert
+      :color="messageType"
+      v-if="message"
+      text
+      outlined
+      dense
+      class="mx-auto mt-4 mb-0"
+      style="width: 90%"
+      >{{ message }}</v-alert
     >
-      <template v-slot:expanded-item="{ headers, item }">
-        <td :colspan="headers.length">
-          <account-details :account="item" :key="item._id" />
-        </td>
-      </template>
-    </v-data-table>
-  </v-card>
+    <v-card width="90%" class="mx-auto mt-5">
+      <v-data-table
+        :headers="headers"
+        :items="accounts"
+        :items-per-page="5"
+        item-key="_id"
+        class="mb-5"
+      >
+        <template v-slot:[`item.actions`]="{ item }">
+          <v-icon small class="mr-2" @click="editItem(item)">
+            mdi-pencil
+          </v-icon>
+          <v-icon small color="error" @click="deleteItem(item)">
+            mdi-delete
+          </v-icon>
+        </template>
+        <template v-slot:[`item.role`]="{ item }">
+          {{ item.role.title }}
+        </template>
+      </v-data-table>
+    </v-card>
+  </div>
 </template>
 
 <script>
-import AccountDetails from "./AccountDetails.vue";
+import axios from "axios";
 
 export default {
   name: "AccountsTable",
 
   data: () => ({
-    expanded: [],
-    accounts: [
-      {
-        _id: "1",
-        firstName: "Cedrik",
-        lastName: "Dubois",
-        email: "cedrikdubois98@gmail.com",
-        role: "Management",
-        permissions: [
-          "Create Dealership",
-          "Edit Dealership",
-          "View Dealership",
-          "Delete Dealership",
-          "Create Account",
-          "Edit Account",
-          "View Account",
-          "Delete Account",
-          "Create Vehicle Property",
-          "Edit Vehicle Property",
-          "View Vehicle Property",
-          "Delete Vehicle Property",
-          "Create Vehicle",
-          "Edit Vehicle",
-          "View Vehicle",
-          "Delete Vehicle",
-        ],
-      },
-      {
-        _id: "2",
-        firstName: "Chloe",
-        lastName: "Gratton",
-        email: "chloegratton@live.ca",
-        role: "Reception",
-        permissions: [
-          "Create Account",
-          "Edit Account",
-          "View Account",
-          "Create Vehicle",
-          "Edit Vehicle",
-          "View Vehicle",
-          "Delete Vehicle",
-        ],
-      },
-    ],
+    accounts: [],
     headers: [
       {
         text: "First Name",
-        value: "firstName",
+        value: "first_name",
         align: "start",
       },
       {
         text: "Last Name",
-        value: "lastName",
+        value: "last_name",
         align: "start",
       },
       {
@@ -89,17 +61,52 @@ export default {
       {
         text: "Role",
         value: "role",
+        align: "start",
+      },
+      {
+        text: "Actions",
+        value: "actions",
         align: "center",
+        sortable: false,
       },
     ],
+    message: null,
+    messageType: null
   }),
   methods: {
-    showAccountDetails(account, slot) {
-      slot.expand(!slot.isExpanded);
+    editItem(item) {
+      console.log(item);
     },
+    deleteItem(item) {
+      console.log(item);
+    },
+    showMessage(type, message) {
+      this.messageType = type;
+      this.message = message;
+      setTimeout(() => {
+        this.message = null;
+        this.messageType = null;
+      }, 4000);
+    },
+    fetchAccounts() {
+      axios
+        .get(`${this.$store.state.baseApiUrl}/users`, {
+          params: {
+            dealership: this.$store.state.loggedInUser.dealership,
+            populate: "role",
+            owner: "false"
+          }
+        })
+        .then(response => {
+          this.accounts = response.data.payload;
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
   },
-  components: {
-    AccountDetails,
-  },
+  mounted() {
+    this.fetchAccounts();
+  }
 };
 </script>

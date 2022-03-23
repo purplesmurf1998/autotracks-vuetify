@@ -10,7 +10,7 @@
       >
         <v-toolbar-title>Accounts</v-toolbar-title>
         <v-spacer />
-        <v-btn color="primary" text rounded small>
+        <v-btn color="primary" text @click="addingAccount = true">
           <v-icon left dark> mdi-plus </v-icon>
           Add Account
         </v-btn>
@@ -34,12 +34,20 @@
         </v-card-text>
       </v-card>
     </v-card>
-    <accounts-table v-if="activeTab == 0" />
+    <accounts-table ref="accountsTable" v-if="activeTab == 0" />
+    <v-dialog max-width="500" v-model="addingAccount">
+      <add-account
+        v-if="addingAccount"
+        @cancel="addingAccount = false"
+        @account-created="accountCreated"
+      />
+    </v-dialog>
   </div>
 </template>
 
 <script>
 import AccountsTable from "./AccountsTable.vue";
+import AddAccount from "./AddAccount.vue"
 
 export default {
   name: "Accounts",
@@ -53,9 +61,15 @@ export default {
     setActiveTab(value) {
       this.activeTab = value;
     },
+    accountCreated(account) {
+      this.addingAccount = false;
+      this.$refs.accountsTable.fetchAccounts();
+      this.$refs.accountsTable.showMessage('success', `Account for the user ${account.first_name} ${account.last_name} has been created successfully.`);
+    },
   },
   components: {
     AccountsTable,
+    AddAccount
   },
 };
 </script>
