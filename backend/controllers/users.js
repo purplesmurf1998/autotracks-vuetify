@@ -130,20 +130,20 @@ exports.updateUser = asyncHandler(async (req, res, next) => {
 // @desc    Delete a specific user
 // @route   DELETE /api/v1/users/:userId
 // @access  Authenticated
-// exports.deleteUser = asyncHandler(async (req, res, next) => {
-//   // find the user with the id provided in the request params and delete
-//   const user = await User.findByIdAndDelete(req.params.userId);
+exports.deleteUser = asyncHandler(async (req, res, next) => {
+  // find the user with the id provided in the request params and delete
+  const user = await Users.findByIdAndDelete(req.params.userId);
 
-//   // if no user is returned, user was not found and send an error response
-//   if (!user) {
-//     return next(
-//       new ErrorResponse(`User with id: ${req.params.userId} not found.`, 404)
-//     );
-//   }
+  // if no user is returned, user was not found and send an error response
+  if (!user) {
+    return next(
+      new ErrorResponse(`User with id: ${req.params.userId} not found.`, 404)
+    );
+  }
 
-//   // send response
-//   res.status(200).json({
-//     success: true,
-//     payload: {}
-//   });
-// });
+  // send response
+  res.status(200).json({
+    success: true,
+    payload: {}
+  });
+});

@@ -1,5 +1,5 @@
 <template>
-  <v-card width="90%" class="mx-auto mt-5">
+  <v-card width="90%" class="mx-auto mt-5" style="height: 100%">
     <v-fade-transition>
       <v-card flat v-if="addingZone">
         <v-card-title>Adding a zone</v-card-title>
@@ -70,8 +70,8 @@
       :center="center"
       :zoom="17"
       ref="mapRef"
-      style="height: 500px"
-      class="mb-5"
+      style="height: 100%"
+      class="pb-5"
       :options="{
         streetViewControl: false,
         fullscreenControl: true,

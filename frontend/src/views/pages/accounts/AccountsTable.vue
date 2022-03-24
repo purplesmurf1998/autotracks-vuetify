@@ -17,12 +17,13 @@
         :items-per-page="5"
         item-key="_id"
         class="mb-5"
+        :search="search"
       >
         <template v-slot:[`item.actions`]="{ item }">
-          <v-icon small class="mr-2" @click="editItem(item)">
+          <v-icon small class="mr-2" @click="editAccount(item)">
             mdi-pencil
           </v-icon>
-          <v-icon small color="error" @click="deleteItem(item)">
+          <v-icon small color="error" @click="deleteAccount(item)">
             mdi-delete
           </v-icon>
         </template>
@@ -31,16 +32,51 @@
         </template>
       </v-data-table>
     </v-card>
+    <!-- Delete dialog -->
+    <v-dialog
+      transition="dialog-bottom-transition"
+      width="500"
+      v-model="deletingAccount"
+    >
+      <delete-dialog
+        dialogContent="Are you certain you want to delete this staff account?"
+        @confirm="confirmDeleteAccount"
+        @cancel="deletingAccount = false"
+      />
+    </v-dialog>
+    <!-- Edit dialog -->
+    <v-dialog
+      transition="dialog-bottom-transition"
+      width="500"
+      v-model="editingAccount"
+    >
+      <account-details
+        v-if="editingAccount"
+        :account="selectedAccount"
+        @account-updated="accountUpdated"
+        @cancel="editingAccount = null"
+      />
+    </v-dialog>
   </div>
 </template>
 
 <script>
 import axios from "axios";
+import DeleteDialog from "../../../components/DeleteDialog.vue"
+import AccountDetails from "./AccountDetails.vue"
 
 export default {
   name: "AccountsTable",
-
+  props: {
+    search: {
+      type: String,
+      required: true
+    }
+  },
   data: () => ({
+    deletingAccount: false,
+    selectedAccount: null,
+    editingAccount: false,
     accounts: [],
     headers: [
       {
@@ -74,11 +110,31 @@ export default {
     messageType: null
   }),
   methods: {
-    editItem(item) {
-      console.log(item);
+    editAccount(account) {
+      this.selectedAccount = account;
+      this.editingAccount = true;
     },
-    deleteItem(item) {
-      console.log(item);
+    accountUpdated() {
+      this.editingAccount = false;
+      this.selectedAccount = null;
+      this.fetchAccounts();
+      this.showMessage('success', `Account has been successfully updated.`);
+    },
+    deleteAccount(account) {
+      this.selectedAccount = account;
+      this.deletingAccount = true;
+    },
+    confirmDeleteAccount() {
+      axios
+        .delete(`${this.$store.state.baseApiUrl}/users/${this.selectedAccount._id}`)
+        .then(() => {
+          this.deletingAccount = false;
+          this.fetchAccounts();
+          this.showMessage('success', `Account has been successfully deleted.`);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     },
     showMessage(type, message) {
       this.messageType = type;
@@ -104,6 +160,10 @@ export default {
           console.log(error);
         });
     }
+  },
+  components: {
+    DeleteDialog,
+    AccountDetails
   },
   mounted() {
     this.fetchAccounts();

@@ -6,7 +6,8 @@ const {
   createUser,
   getUsers,
   getUser,
-  updateUser
+  updateUser,
+  deleteUser
 } = require('../controllers/users');
 
 // attach methods to the proper routes
@@ -16,7 +17,8 @@ router.route('/')
 
 router.route('/:userId')
   .get(getUser)
-  .put(updateUser);
+  .put(updateUser)
+  .delete(deleteUser);
 
 // export the router so it can be used in the server.js file
 module.exports = router;

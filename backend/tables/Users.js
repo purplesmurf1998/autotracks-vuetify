@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const PropertyOrders = require('../tables/PropertyOrders');
 
 const UserSchema = new mongoose.Schema({
   first_name: {
@@ -55,6 +56,11 @@ const UserSchema = new mongoose.Schema({
 UserSchema.pre('save', async function (next) {
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
+})
+
+// Cascade delete related items
+UserSchema.post('remove', async function (next) {
+  await PropertyOrders.deleteMany({user: this._id});
 })
 
 // Sign JWT and return

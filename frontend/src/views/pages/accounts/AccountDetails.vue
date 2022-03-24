@@ -1,49 +1,60 @@
 <template>
-  <v-container fluid class="pa-5">
-    <h4>Account details</h4>
-    <p>{{ account.firstName }} {{ account.lastName }}</p>
-    <v-row>
-      <!-- Edit dialog -->
-      <v-dialog
-        transition="dialog-bottom-transition"
-        width="500"
-        v-model="editDialog"
-        persistent
+  <v-card>
+    <v-card-title>
+      Account Details
+    </v-card-title>
+    <v-card-text v-if="localAccount">
+      <v-form
+        ref="accountForm"
+        v-model="accountFormValid"
+        lazy-validation
       >
-        <template v-slot:activator="{ on, attrs }">
-          <v-btn text rounded color="primary" small v-bind="attrs" v-on="on"
-            >Edit details</v-btn
-          >
-        </template>
-        <edit-account-details
-          :account="account"
-          v-on:close="editDialog = false"
+        <v-text-field 
+          label="First Name" 
+          outlined 
+          dense 
+          v-model="localAccount.first_name"
+          append-icon="mdi-alphabetical"
+          :rules="firstNameRules"
         />
-      </v-dialog>
-      <!-- Delete dialog -->
-      <v-dialog
-        transition="dialog-bottom-transition"
-        width="500"
-        v-model="deleteDialog"
-      >
-        <template v-slot:activator="{ on, attrs }">
-          <v-btn text rounded color="error" small v-bind="attrs" v-on="on"
-            >Delete account</v-btn
-          >
-        </template>
-        <delete-dialog
-          dialogContent="Are you certain you want to delete this staff account?"
-          v-on:confirm="deleteDialog = false"
-          v-on:cancel="deleteDialog = false"
-        ></delete-dialog>
-      </v-dialog>
-    </v-row>
-  </v-container>
+        <v-text-field 
+          label="Last Name" 
+          outlined 
+          dense 
+          v-model="localAccount.last_name"
+          append-icon="mdi-alphabetical"
+          :rules="lastNameRules"
+        />
+        <v-text-field 
+          label="Email" 
+          outlined 
+          dense 
+          v-model="localAccount.email"
+          append-icon="mdi-email-outline"
+          disabled
+        />
+        <v-select
+          :items="roles"
+          outlined
+          dense
+          label="Role"
+          v-model="localAccount.role._id"
+          append-icon="mdi-account-cog-outline"
+          :rules="roleRules"
+        />
+      </v-form>
+    </v-card-text>
+    <v-divider />
+    <v-card-actions>
+      <v-spacer />
+      <v-btn color="primary" @click="validateAccountForm">Save Changes</v-btn>
+      <v-btn color="secondary" text @click="cancel">Cancel</v-btn>
+    </v-card-actions>
+  </v-card>
 </template>
 
 <script>
-import DeleteDialog from "../../../components/DeleteDialog.vue";
-import EditAccountDetails from "./EditAccountDetails.vue";
+import axios from "axios";
 
 export default {
   name: "AccountDetails",
@@ -54,22 +65,64 @@ export default {
     },
   },
   data: () => ({
-    deleteDialog: false,
-    editDialog: false,
+    localAccount: null,
+    roles: [],
+    accountFormValid: true,
+    firstNameRules: [(v) => !!v || "First name is required"],
+    lastNameRules: [(v) => !!v || "Last name is required"],
+    roleRules: [(v) => !!v || "Role is required"],
   }),
   methods: {
-    deleteAccount() {
-      //TODO: Delete the account and close the dialog
-      this.deleteDialog = false;
+    validateAccountForm() {
+      if (this.$refs.accountForm.validate()) this.save();
     },
-  },
-  components: {
-    DeleteDialog,
-    EditAccountDetails,
+    save() {
+      // grab only the first name, last name and role
+      const { first_name, last_name, role } = this.localAccount;
+      const data = {
+        first_name,
+        last_name,
+        role
+      }
+
+      axios
+        .put(`${this.$store.state.baseApiUrl}/users/${this.account._id}`, data)
+        .then(response => {
+          this.$emit('account-updated', response.data.payload);
+        })
+        .catch(error => {
+          console.log(error);
+        })
+    },
+    cancel() {
+      this.$emit('cancel');
+    },
+    fetchRoles() {
+      axios
+        .get(`${this.$store.state.baseApiUrl}/roles`, {
+          params: {
+            dealership: this.$store.state.loggedInUser.dealership,
+          }
+        })
+        .then(response => {
+          let tempRoles = [];
+          response.data.payload.forEach(role => {
+            tempRoles.push({
+              text: role.title,
+              value: role._id
+            });
+          })
+          this.roles = tempRoles;
+        })
+        .catch(error => {
+          console.log(error);
+        })
+    }
   },
   mounted() {
-    console.log(this.account);
-  },
+    this.localAccount = JSON.parse(JSON.stringify(this.account));
+    this.fetchRoles();
+  }
 };
 </script>
 

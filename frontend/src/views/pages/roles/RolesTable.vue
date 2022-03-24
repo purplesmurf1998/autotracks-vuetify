@@ -50,7 +50,7 @@
           v-model="permissionSearch"
         />
         <v-row class="ma-0" v-if="selectedRole">
-          <v-virtual-scroll :items="permissions" :item-height="35" height="300">
+          <v-virtual-scroll :items="permissions" :item-height="35" :height="400">
             <template v-slot:default="{ item }">
               <v-switch
                 v-model="selectedRolePermissions[item]"
@@ -150,7 +150,7 @@ export default {
       return Object.keys(this.selectedRolePermissions).filter((title) =>
         title.includes(this.permissionSearch)
       );
-    },
+    }
   },
   methods: {
     deleteRole() {

@@ -24,6 +24,7 @@
           <!-- Accounts Sub Header -->
           <v-row class="pa-2" align="center">
             <v-text-field
+              v-model="search"
               dense
               outlined
               prepend-inner-icon="mdi-magnify"
@@ -34,7 +35,7 @@
         </v-card-text>
       </v-card>
     </v-card>
-    <accounts-table ref="accountsTable" v-if="activeTab == 0" />
+    <accounts-table ref="accountsTable" v-if="activeTab == 0" :search="search"/>
     <v-dialog max-width="500" v-model="addingAccount">
       <add-account
         v-if="addingAccount"
@@ -55,7 +56,7 @@ export default {
   data: () => ({
     activeTab: 0,
     addingAccount: false,
-    accountSearch: "",
+    search: "",
   }),
   methods: {
     setActiveTab(value) {

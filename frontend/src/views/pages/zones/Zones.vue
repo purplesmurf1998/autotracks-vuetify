@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="height: 100%">
     <v-card flat>
       <v-toolbar
         color="grey lighten-4"

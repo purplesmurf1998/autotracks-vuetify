@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <v-card flat>
+  <div style="height: 100%">
+    <v-card flat style="height: 100%">
       <v-toolbar
         color="grey lighten-4"
         extension-height="50"
@@ -127,12 +127,12 @@
           class="row-pointer"
         ></v-data-table>
       </v-card>
-      <v-card width="90%" class="mx-auto mb-10" v-if="tabs == 3">
+      <v-card width="90%" class="mx-auto mb-10" v-if="tabs == 3" style="height: 100%">
         <GmapMap
           :center.sync="center"
           :zoom="zoom"
           ref="mapRef"
-          style="height: 600px"
+          style="height: 100%"
           :options="{
             streetViewControl: false,
             fullscreenControl: true,
@@ -232,8 +232,7 @@ export default {
       this.$router.replace({ query: {} });
       this.fetchVehicles();
     },
-    vehicleAdded(vehicle) {
-      console.log(vehicle);
+    vehicleAdded() {
       this.addingVehicle = false;
       this.fetchVehicles();
     },
