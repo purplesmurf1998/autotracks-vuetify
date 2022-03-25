@@ -10,7 +10,7 @@
       >
         <v-toolbar-title>Account Roles</v-toolbar-title>
         <v-spacer />
-        <v-btn color="primary" text rounded small @click="addingRole = true">
+        <v-btn color="primary" text @click="addingRole = true">
           <v-icon left dark> mdi-plus </v-icon>
           Add Account Role
         </v-btn>

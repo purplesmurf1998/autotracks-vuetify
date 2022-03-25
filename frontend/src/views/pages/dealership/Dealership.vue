@@ -10,7 +10,7 @@
       >
         <v-toolbar-title>Dealership</v-toolbar-title>
         <v-spacer />
-        <v-btn color="primary" text small @click="addingDealership = true">
+        <v-btn color="primary" text @click="addingDealership = true">
           <v-icon left dark> mdi-plus </v-icon>
           Create New Dealership
         </v-btn>

@@ -13,7 +13,6 @@
         <v-btn
           color="primary"
           text
-          small
           v-if="!$vuetify.breakpoint.mobile"
           @click="editingPropertyOrder = true"
         >
@@ -23,14 +22,13 @@
         <v-btn
           color="primary"
           text
-          small
           v-if="!$vuetify.breakpoint.mobile"
           @click="addingVehicle = true"
         >
           <v-icon left dark class="mr-2"> mdi-plus </v-icon>
           Add Vehicle
         </v-btn>
-        <v-btn color="primary" text small v-if="!$vuetify.breakpoint.mobile">
+        <v-btn color="primary" text v-if="!$vuetify.breakpoint.mobile">
           <v-icon left dark> mdi-download-outline </v-icon>
           Export
         </v-btn>
@@ -119,9 +117,11 @@
       </div>
       <v-card width="90%" class="mx-auto" v-if="tabs < 3">
         <v-data-table
+          dense
           :headers="headers"
           :items="items"
           :search="search"
+          :group-by="groupBy"
           @click:row="setSelectedVehicle"
           @pagination="handlePagination"
           class="row-pointer"
@@ -200,6 +200,7 @@ export default {
     tabs: 0,
     search: "",
     filters: [],
+    groupBy: null,
     results: 0,
     center: { lat: 45.431311, lng: -73.479005 },
     zoom: 17,
@@ -278,6 +279,7 @@ export default {
             }
           });
 
+          this.groupBy = response.data.payload.group_by ? response.data.payload.group_by.value : null;
           this.headers = tempHeaders;
           this.fetchVehicles();
         })
@@ -336,8 +338,13 @@ export default {
         return tempItems;
       }
     },
-    showVehicleDetails() {
-      return this.$route.query.vehicle;
+    showVehicleDetails: {
+      get() {
+        return this.$route.query.vehicle;
+      },
+      set(value) {
+        return value;
+      }
     },
     filteredMapInventory() {
       let vehicles = this.inventory.filter((vehicle) => {

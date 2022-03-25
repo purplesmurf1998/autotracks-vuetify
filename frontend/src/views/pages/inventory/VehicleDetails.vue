@@ -70,11 +70,14 @@
               </p>
             </v-row>
             <v-row
-              justify="space-between"
               align="center"
               class="ma-0 px-5"
             >
               <p class="text-lg-button mb-0">On Road Since</p>
+              <v-icon small class="ml-3" @click="editOnRoadSince">
+                mdi-pencil
+              </v-icon>
+              <v-spacer />
               <p class="font-weight-light mb-0" v-if="!vehicle.on_road_since">N/A</p>
             </v-row>
             <v-row
@@ -191,6 +194,9 @@ export default {
     messageType: null
   }),
   methods: {
+    editOnRoadSince() {
+
+    },
     getFormattedValue(property) {
       switch (property.input_type) {
         case 'Text': return property.value;

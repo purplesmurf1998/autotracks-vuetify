@@ -26,6 +26,10 @@ const PropertyOrderSchema = new mongoose.Schema({
     },
     default: []
   }],
+  group_by: {
+    type: Object,
+    default: null
+  }
 })
 
 module.exports = mongoose.model('PropertyOrders', PropertyOrderSchema);

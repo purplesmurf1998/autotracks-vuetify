@@ -4,6 +4,7 @@ const Properties = require('../tables/Properties');
 const PropertyOrders = require('../tables/PropertyOrders');
 const Users = require('../tables/Users');
 const Dealerships = require('../tables/Dealerships');
+const Vehicles = require('../tables/Vehicles');
 
 // @desc        Get all vehicle property models for a specific dealership
 // @route       GET /api/v1/properties
@@ -52,6 +53,19 @@ exports.createProperty = asyncHandler(async (req, res, next) => {
     console.log(propertyOrder);
     propertyOrder.order.push({ property: property._id, visible: true });
     propertyOrder.save();
+  }
+
+  // add the property to vehicle properties for this dealership
+  let vehicles = await Vehicles.find({ dealership: dealership._id });
+
+  for (let i = 0; i < vehicles.length; i++) {
+    let tempVehicle = vehicles[i];
+    tempVehicle.properties[property.key] = {
+      label: property.label,
+      value: null,
+      input_type: property.input_type
+    };
+    await Vehicles.findByIdAndUpdate(tempVehicle._id, { properties: tempVehicle.properties });
   }
 
   res.status(201).json({ success: true, payload: property })
@@ -103,6 +117,15 @@ exports.deleteProperty = asyncHandler(async (req, res, next) => {
       propertyOrder.order.splice(index, 1);
       propertyOrder.save();
     }
+  }
+
+  // delete the property from vehicle properties for this dealership
+  let vehicles = await Vehicles.find({ dealership: dealership._id });
+
+  for (let i = 0; i < vehicles.length; i++) {
+    let tempVehicle = vehicles[i];
+    delete tempVehicle.properties[property.key];
+    await Vehicles.findByIdAndUpdate(tempVehicle._id, { properties: tempVehicle.properties });
   }
 
   property.delete();

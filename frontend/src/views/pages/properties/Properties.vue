@@ -13,8 +13,6 @@
         <v-btn
           color="primary"
           text
-          rounded
-          small
           @click="addingProperty = true"
         >
           <v-icon left dark> mdi-plus </v-icon>
