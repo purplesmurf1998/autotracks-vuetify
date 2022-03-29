@@ -66,7 +66,7 @@ export default {
 
         let dealership = response.data.payload.dealership;
         let loggedInUser = response.data.payload;
-        loggedInUser.dealership = dealership._id;
+        loggedInUser.dealership = dealership ? dealership._id : null;
         const data = {
           token: response.data.token,
           loggedInUser,

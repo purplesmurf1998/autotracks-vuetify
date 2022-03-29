@@ -126,7 +126,14 @@ export default {
     },
     confirmDeleteAccount() {
       axios
-        .delete(`${this.$store.state.baseApiUrl}/users/${this.selectedAccount._id}`)
+        .delete(
+          `${this.$store.state.baseApiUrl}/users/${this.selectedAccount._id}`, 
+          {
+            headers: {
+              'Authorization': `Bearer ${this.$store.state.token}`
+            }
+          }
+        )
         .then(() => {
           this.deletingAccount = false;
           this.fetchAccounts();
@@ -151,6 +158,9 @@ export default {
             dealership: this.$store.state.loggedInUser.dealership,
             populate: "role",
             owner: "false"
+          },
+          headers: {
+            'Authorization': `Bearer ${this.$store.state.token}`
           }
         })
         .then(response => {

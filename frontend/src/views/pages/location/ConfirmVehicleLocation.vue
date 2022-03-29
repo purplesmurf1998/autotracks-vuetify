@@ -76,9 +76,17 @@ export default {
       };
 
       axios
-        .put(`${this.$store.state.baseApiUrl}/vehicles/${this.vehicle._id}`, {
-          location: data,
-        })
+        .put(
+          `${this.$store.state.baseApiUrl}/vehicles/${this.vehicle._id}`, 
+          {
+            location: data,
+          },
+          {  
+            headers: {
+              'Authorization': `Bearer ${this.$store.state.token}`
+            }
+          }
+        )
         .then(() => {
           this.$router.replace({ path: "/inventory" });
         })
@@ -89,7 +97,12 @@ export default {
     fetchVehicle() {
       axios
         .get(
-          `${this.$store.state.baseApiUrl}/vehicles/${this.$route.params.vehicleId}`
+          `${this.$store.state.baseApiUrl}/vehicles/${this.$route.params.vehicleId}`,
+          {
+            headers: {
+              'Authorization': `Bearer ${this.$store.state.token}`
+            }
+          }
         )
         .then((response) => {
           this.vehicle = response.data.payload;

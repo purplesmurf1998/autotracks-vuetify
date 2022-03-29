@@ -192,11 +192,19 @@ export default {
       delete properties.vin;
       
       axios
-        .post(`${this.$store.state.baseApiUrl}/vehicles`, {
-          dealership: this.$store.state.loggedInUser.dealership,
-          vin: vin.value,
-          properties,
-        })
+        .post(
+          `${this.$store.state.baseApiUrl}/vehicles`, 
+          {
+            dealership: this.$store.state.loggedInUser.dealership,
+            vin: vin.value,
+            properties,
+          },
+          {
+            headers: {
+              'Authorization': `Bearer ${this.$store.state.token}`
+            }
+          }
+        )
         .then((response) => {
           this.$emit("vehicle-added", response.data.payload);
         })
@@ -213,6 +221,9 @@ export default {
           params: {
             dealership: this.$store.state.loggedInUser.dealership,
           },
+          headers: {
+            'Authorization': `Bearer ${this.$store.state.token}`
+          }
         })
         .then((response) => {
           let tempFields = [];

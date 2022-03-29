@@ -1,6 +1,6 @@
 <template>
     <v-card max-width="300" elevation="3" class="ma-2">
-      <v-img height="200" :src="require('@/assets/dark-background.jpg')">
+      <v-img height="200" :src="require('@/assets/accent-background.jpg')">
       <v-toolbar flat color="rgba(0, 0, 0, 0)" absolute>
         <v-menu>
           <template v-slot:activator="{ on, attrs }">
@@ -67,6 +67,9 @@ export default {
           params: {
             dealership: this.$store.state.loggedInUser.dealership,
           },
+          headers: {
+            'Authorization': `Bearer ${this.$store.state.token}`
+          }
         })
         .then((response) => {
           this.count = response.data.payload.length;

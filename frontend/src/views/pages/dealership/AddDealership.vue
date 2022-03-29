@@ -121,14 +121,22 @@ export default {
   methods: {
     confirmCreate() {
       axios
-        .post(`${this.$store.state.baseApiUrl}/dealerships`, {
-          name: this.dealershipName,
-          owner: this.$store.state.loggedInUser._id,
-          geocoded_address: this.geocodedAddress,
-          formatted_address: this.formattedAddress,
-          lat: this.lat,
-          lng: this.lng,
-        })
+        .post(
+          `${this.$store.state.baseApiUrl}/dealerships`, 
+          {
+            name: this.dealershipName,
+            owner: this.$store.state.loggedInUser._id,
+            geocoded_address: this.geocodedAddress,
+            formatted_address: this.formattedAddress,
+            lat: this.lat,
+            lng: this.lng,
+          },
+          {
+            headers: {
+              'Authorization': `Bearer ${this.$store.state.token}`
+            }
+          }
+        )
         .then(() => {
           this.$emit("dealership-added");
         })
@@ -138,28 +146,33 @@ export default {
     },
     geocodeDealership() {
       this.loading = true;
-      axios({
-        method: "POST",
-        url: `${this.$store.state.baseApiUrl}/utilities/geocode`,
-        data: {
+      axios
+        .post(
+        `${this.$store.state.baseApiUrl}/utilities/geocode`,
+        {
           street: this.street,
           city: this.city,
           provinceState: this.provinceState,
           country: this.country,
         },
+        {
+          headers: {
+            'Authorization': `Bearer ${this.$store.state.token}`
+          }
+        }
+      )
+      .then((response) => {
+        this.geocodedAddress = response.data.payload;
+        this.formattedAddress = this.geocodedAddress.formattedAddress;
+        this.lat = this.geocodedAddress.latitude;
+        this.lng = this.geocodedAddress.longitude;
+        this.loading = false;
+        this.step = this.step + 1;
       })
-        .then((response) => {
-          this.geocodedAddress = response.data.payload;
-          this.formattedAddress = this.geocodedAddress.formattedAddress;
-          this.lat = this.geocodedAddress.latitude;
-          this.lng = this.geocodedAddress.longitude;
-          this.loading = false;
-          this.step = this.step + 1;
-        })
-        .catch((error) => {
-          this.loading = false;
-          console.log(error);
-        });
+      .catch((error) => {
+        this.loading = false;
+        console.log(error);
+      });
     },
     validateDealershipForm() {
       if (this.$refs.dealershipForm.validate()) this.geocodeDealership();

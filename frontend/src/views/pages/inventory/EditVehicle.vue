@@ -189,9 +189,17 @@ export default {
     },
 		save() {
 			axios
-        .put(`${this.$store.state.baseApiUrl}/vehicles/${this.vehicle._id}`, {
-          properties: this.vehicleProperties
-        })
+        .put(
+          `${this.$store.state.baseApiUrl}/vehicles/${this.vehicle._id}`, 
+          {
+            properties: this.vehicleProperties
+          },
+          {  
+            headers: {
+              'Authorization': `Bearer ${this.$store.state.token}`
+            }
+          }
+        )
         .then((response) => {
           this.$emit("vehicle-updated", response.data.payload);
         })
@@ -212,6 +220,9 @@ export default {
           params: {
             dealership: this.$store.state.loggedInUser.dealership,
           },
+          headers: {
+            'Authorization': `Bearer ${this.$store.state.token}`
+          }
         })
         .then((response) => {
           let tempFields = [];

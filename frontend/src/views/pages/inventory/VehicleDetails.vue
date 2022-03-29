@@ -218,7 +218,14 @@ export default {
     },
     confirmDeleteVehicle() {
       axios
-        .delete(`${this.$store.state.baseApiUrl}/vehicles/${this.vehicleId}`)
+        .delete(
+          `${this.$store.state.baseApiUrl}/vehicles/${this.vehicleId}`,
+          {
+            headers: {
+              'Authorization': `Bearer ${this.$store.state.token}`
+            }
+          }
+        )
         .then(() => {
           this.$emit("vehicle-deleted");
         })
@@ -228,7 +235,11 @@ export default {
     },
     fetchVehicle() {
       axios
-        .get(`${this.$store.state.baseApiUrl}/vehicles/${this.vehicleId}`)
+        .get(`${this.$store.state.baseApiUrl}/vehicles/${this.vehicleId}`, {
+          headers: {
+            'Authorization': `Bearer ${this.$store.state.token}`
+          }
+        })
         .then(response => {
           this.vehicle = response.data.payload;
           this.loading = false;

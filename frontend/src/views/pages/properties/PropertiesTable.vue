@@ -135,7 +135,12 @@ export default {
     confirmDeleteItem() {
       axios
         .delete(
-          `${this.$store.state.baseApiUrl}/properties/${this.deleteItemId}`
+          `${this.$store.state.baseApiUrl}/properties/${this.deleteItemId}`,
+          {
+            headers: {
+              'Authorization': `Bearer ${this.$store.state.token}`
+            }
+          }
         )
         .then(() => {
           this.fetchProperties();
@@ -154,6 +159,9 @@ export default {
           params: {
             dealership: this.$store.state.loggedInUser.dealership,
           },
+          headers: {
+            'Authorization': `Bearer ${this.$store.state.token}`
+          }
         })
         .then(response => {
           this.properties = response.data.payload;

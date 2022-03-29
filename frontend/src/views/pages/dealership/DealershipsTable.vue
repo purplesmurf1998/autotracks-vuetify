@@ -110,6 +110,11 @@ export default {
           `${this.$store.state.baseApiUrl}/users/${this.$store.state.loggedInUser._id}`,
           {
             dealership: this.selectedDealership._id,
+          },
+          {
+            headers: {
+              'Authorization': `Bearer ${this.$store.state.token}`
+            }
           }
         )
         .then(() => {
@@ -129,9 +134,13 @@ export default {
           params: {
             owner: this.$store.state.loggedInUser._id,
           },
+          headers: {
+            'Authorization': `Bearer ${this.$store.state.token}`
+          }
         })
         .then((response) => {
           this.dealerships = response.data.payload;
+          this.$emit('set-count', this.dealerships.length);
         })
         .catch((error) => {
           console.log(error);

@@ -1,5 +1,12 @@
 const mongoose = require('mongoose');
 
+const Properties = require("./Properties");
+const Users = require("./Users");
+const Roles = require("./Roles");
+const Vehicles = require("./Vehicles");
+const Zones = require("./Zones");
+const PropertyOrders = require("./PropertyOrders");
+
 const DealershipSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -33,5 +40,21 @@ const DealershipSchema = new mongoose.Schema({
     default: Date.now
   },
 });
+
+DealershipSchema.pre("remove", async function() {
+  console.log("Cascade deleting");
+  // delete properties related to the dealership
+  await Properties.deleteMany({ dealership: this._id });
+  // delete roles
+  await Roles.deleteMany({ dealership: this._id });
+  // delete vehicles
+  await Vehicles.deleteMany({ dealership: this._id });
+  // delete zones
+  await Zones.deleteMany({ dealership: this._id });
+  // delete property orders
+  await PropertyOrders.deleteMany({ dealership: this._id });
+  // delete users
+  await Users.deleteMany({ dealership: this._id, owner: false });
+})
 
 module.exports = mongoose.model("Dealerships", DealershipSchema);

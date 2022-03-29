@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { protect } = require("../middleware/authorization");
 
 const {
   getProperties,
@@ -12,18 +13,18 @@ const {
 } = require('../controllers/properties');
 
 router.route('/')
-  .post(createProperty)
-  .get(getProperties);
+  .post(protect, createProperty)
+  .get(protect, getProperties);
 
 router.route('/order')
-  .get(getPropertyOrder)
-  .post(createPropertyOrder);
+  .get(protect, getPropertyOrder)
+  .post(protect, createPropertyOrder);
 
 router.route('/order/:orderId')
-  .put(updatePropertyOrder);
+  .put(protect, updatePropertyOrder);
 
 router.route('/:propertyId')
-  .put(updateProperty)
-  .delete(deleteProperty);
+  .put(protect, updateProperty)
+  .delete(protect, deleteProperty);
 
 module.exports = router;

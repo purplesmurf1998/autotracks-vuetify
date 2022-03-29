@@ -141,7 +141,12 @@ export default {
       axios
         .put(
           `${this.$store.state.baseApiUrl}/properties/${this.property._id}`,
-          updatedProperty
+          updatedProperty,
+          {
+            headers: {
+              'Authorization': `Bearer ${this.$store.state.token}`
+            }
+          }
         )
         .then(() => {
           this.$emit("property-updated");

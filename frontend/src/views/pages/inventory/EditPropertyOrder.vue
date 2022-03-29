@@ -80,6 +80,11 @@ export default {
           {
             order: this.properties,
             group_by: this.groupBy
+          },
+          {
+            headers: {
+              'Authorization': `Bearer ${this.$store.state.token}`
+            }
           }
         )
         .then(() => {
@@ -99,6 +104,9 @@ export default {
             dealership: this.$store.state.loggedInUser.dealership,
             user: this.$store.state.loggedInUser._id,
           },
+          headers: {
+            'Authorization': `Bearer ${this.$store.state.token}`
+          }
         })
         .then((response) => {
           this.properties = response.data.payload.order;

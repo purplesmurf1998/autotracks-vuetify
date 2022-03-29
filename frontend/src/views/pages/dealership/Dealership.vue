@@ -22,19 +22,19 @@
         </v-tabs>
         <v-divider />
         <v-card-text>
-          <v-row class="pa-2" align="center">
-            <p class="mb-0">
+          <v-row class="pa-2" align="center" v-if="activeTab == 1">
+            <p class="mb-0" v-if="dealershipCount">
               {{ dealershipCount }} / 5 dealerships created for this account
               plan
             </p>
             <v-spacer />
             <v-btn color="primary"> Upgrade Plan </v-btn>
           </v-row>
+          <dealership-details id="dealership-details" v-if="activeTab == 0"/>
         </v-card-text>
       </v-card>
     </v-card>
-    <dealership-details id="dealership-details" v-if="activeTab == 0" />
-    <dealerships-table ref="dealershipTable" v-if="activeTab == 1" />
+    <dealerships-table ref="dealershipTable" v-if="activeTab == 1" @set-count="setDealershipCount"/>
     <v-dialog
       transition="dialog-bottom-transition"
       width="500"
@@ -59,13 +59,16 @@ export default {
 
   data: () => ({
     activeTab: 0,
-    dealershipCount: 1,
+    dealershipCount: null,
     addingDealership: false,
   }),
   methods: {
     dealershipAdded() {
       this.$refs.dealershipTable.fetchDealerships();
       this.addingDealership = false;
+    },
+    setDealershipCount(value) {
+      this.dealershipCount = value;
     },
     setActiveTab(value) {
       this.activeTab = value;

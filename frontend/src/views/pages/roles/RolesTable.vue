@@ -156,7 +156,12 @@ export default {
     deleteRole() {
       axios
         .delete(
-          `${this.$store.state.baseApiUrl}/roles/${this.selectedRole._id}`
+          `${this.$store.state.baseApiUrl}/roles/${this.selectedRole._id}`,
+          {
+            headers: {
+              'Authorization': `Bearer ${this.$store.state.token}`
+            }
+          }
         )
         .then(() => {
           this.deletingRole = false;
@@ -180,9 +185,17 @@ export default {
     },
     saveRoleTitle() {
       axios
-        .put(`${this.$store.state.baseApiUrl}/roles/${this.selectedRole._id}`, {
-          title: this.selectedRole.title,
-        })
+        .put(
+          `${this.$store.state.baseApiUrl}/roles/${this.selectedRole._id}`, 
+          {
+            title: this.selectedRole.title,
+          },
+          {
+            headers: {
+              'Authorization': `Bearer ${this.$store.state.token}`
+            }
+          }
+        )
         .then((response) => {
           this.selectedRole = response.data.payload;
           this.originalRoleTitle = "";
@@ -210,9 +223,17 @@ export default {
 
       // submit changes to API
       axios
-        .put(`${this.$store.state.baseApiUrl}/roles/${this.selectedRole._id}`, {
-          permissions: temp_permissions,
-        })
+        .put(
+          `${this.$store.state.baseApiUrl}/roles/${this.selectedRole._id}`, 
+          {
+            permissions: temp_permissions,
+          },
+          {
+            headers: {
+              'Authorization': `Bearer ${this.$store.state.token}`
+            }
+          }
+        )
         .then((response) => {
           this.selectedRole = response.data.payload;
           this.showMessage("success", "Role profile successfully modified.");
@@ -255,6 +276,9 @@ export default {
           params: {
             dealership: dealershipId,
           },
+          headers: {
+            'Authorization': `Bearer ${this.$store.state.token}`
+          }
         })
         .then((response) => {
           console.log(response);

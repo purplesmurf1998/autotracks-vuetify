@@ -261,6 +261,9 @@ export default {
             dealership: this.$store.state.loggedInUser.dealership,
             user: this.$store.state.loggedInUser._id,
           },
+          headers: {
+            'Authorization': `Bearer ${this.$store.state.token}`
+          }
         })
         .then((response) => {
           let tempHeaders = [
@@ -293,6 +296,9 @@ export default {
           params: {
             dealership: this.$store.state.loggedInUser.dealership,
           },
+          headers: {
+            'Authorization': `Bearer ${this.$store.state.token}`
+          }
         })
         .then((response) => {
           let tempInventory = [];

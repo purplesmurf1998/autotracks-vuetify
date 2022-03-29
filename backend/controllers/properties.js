@@ -43,16 +43,18 @@ exports.createProperty = asyncHandler(async (req, res, next) => {
   const owner = await Users.findById(dealership.owner);
   // get the property order
   let propertyOrder = await PropertyOrders.findOne({ dealership: dealership._id, user: owner._id });
-  console.log(propertyOrder);
-  propertyOrder.order.push({ property: property._id, visible: true });
-  propertyOrder.save();
+  if (propertyOrder) {
+    propertyOrder.order.push({ property: property._id, visible: true });
+    propertyOrder.save();
+  }
   // do the rest of the accounts in the dealership
   const users = await Users.find({ dealership: dealership._id, owner: false });
   for (let i = 0; i < users.length; i++) {
     propertyOrder = await PropertyOrders.findOne({ dealership: dealership._id, user: users[i]._id });
-    console.log(propertyOrder);
-    propertyOrder.order.push({ property: property._id, visible: true });
-    propertyOrder.save();
+    if (propertyOrder) {
+      propertyOrder.order.push({ property: property._id, visible: true });
+      propertyOrder.save();
+    }
   }
 
   // add the property to vehicle properties for this dealership
@@ -99,23 +101,27 @@ exports.deleteProperty = asyncHandler(async (req, res, next) => {
   const owner = await Users.findById(dealership.owner);
   // get the property order
   let propertyOrder = await PropertyOrders.findOne({ dealership: dealership._id, user: owner._id });
-  let index = propertyOrder.order.findIndex(order => {
-    return order.property._id.valueOf() == property._id.valueOf()
-  });
-  if (index >= 0) {
-    propertyOrder.order.splice(index, 1);
-    propertyOrder.save();
-  }
-  // do the rest of the accounts in the dealership
-  const users = await Users.find({ dealership: dealership._id, owner: false });
-  for (let i = 0; i < users.length; i++) {
-    propertyOrder = await PropertyOrders.findOne({ dealership: dealership._id, user: users[i]._id });
-    index = propertyOrder.order.findIndex(order => {
+  if (propertyOrder) {
+    let index = propertyOrder.order.findIndex(order => {
       return order.property._id.valueOf() == property._id.valueOf()
     });
     if (index >= 0) {
       propertyOrder.order.splice(index, 1);
       propertyOrder.save();
+    }
+  }
+  // do the rest of the accounts in the dealership
+  const users = await Users.find({ dealership: dealership._id, owner: false });
+  for (let i = 0; i < users.length; i++) {
+    propertyOrder = await PropertyOrders.findOne({ dealership: dealership._id, user: users[i]._id });
+    if (propertyOrder) {
+      index = propertyOrder.order.findIndex(order => {
+        return order.property._id.valueOf() == property._id.valueOf()
+      });
+      if (index >= 0) {
+        propertyOrder.order.splice(index, 1);
+        propertyOrder.save();
+      }
     }
   }
 

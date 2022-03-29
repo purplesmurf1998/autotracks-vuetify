@@ -93,7 +93,15 @@ export default {
       }
 
       axios
-        .post(`${this.$store.state.baseApiUrl}/users`, account)
+        .post(
+          `${this.$store.state.baseApiUrl}/users`, 
+          account,
+          {  
+            headers: {
+              'Authorization': `Bearer ${this.$store.state.token}`
+            }
+          }
+        )
         .then(response => {
           this.$emit('account-created', response.data.payload);
         })
@@ -118,6 +126,9 @@ export default {
         .get(`${this.$store.state.baseApiUrl}/roles`, {
           params: {
             dealership: this.$store.state.loggedInUser.dealership,
+          },
+          headers: {
+            'Authorization': `Bearer ${this.$store.state.token}`
           }
         })
         .then(response => {

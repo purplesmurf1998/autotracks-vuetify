@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { protect } = require("../middleware/authorization");
 
 // get the methods from the authenticationController
 const {
@@ -12,13 +13,13 @@ const {
 
 // attach methods to the proper routes
 router.route('/')
-  .get(getVehicles)
-  .post(createVehicle);
+  .get(protect, getVehicles)
+  .post(protect, createVehicle);
 
 router.route('/:vehicleId')
-  .get(getVehicle)
-  .put(updateVehicle)
-  .delete(deleteVehicle);
+  .get(protect, getVehicle)
+  .put(protect, updateVehicle)
+  .delete(protect, deleteVehicle);
 
 // export the router so it can be used in the server.js file
 module.exports = router;

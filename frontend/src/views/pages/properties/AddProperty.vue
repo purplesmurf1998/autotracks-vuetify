@@ -136,7 +136,15 @@ export default {
       }
 
       axios
-        .post(`${this.$store.state.baseApiUrl}/properties`, property)
+        .post(
+          `${this.$store.state.baseApiUrl}/properties`, 
+          property,
+          {
+            headers: {
+              'Authorization': `Bearer ${this.$store.state.token}`
+            }
+          }
+        )
         .then((response) => {
           this.$emit("property-created", response);
         })

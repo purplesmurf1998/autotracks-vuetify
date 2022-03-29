@@ -92,11 +92,19 @@ export default {
       console.log(this.permissions);
 
       axios
-        .post(`${this.$store.state.baseApiUrl}/roles`, {
-          dealership: this.$store.state.loggedInUser.dealership,
-          title: this.title,
-          permissions: this.permissions,
-        })
+        .post(
+          `${this.$store.state.baseApiUrl}/roles`, 
+          {
+            dealership: this.$store.state.loggedInUser.dealership,
+            title: this.title,
+            permissions: this.permissions,
+          },
+          {
+            headers: {
+              'Authorization': `Bearer ${this.$store.state.token}`
+            }
+          }
+        )
         .then((response) => {
           this.$emit("role-created", response.data.payload);
         })
