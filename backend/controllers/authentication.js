@@ -46,6 +46,7 @@ exports.signIn = asyncHandler(async (req, res, next) => {
 // @access  Authenticated
 exports.logout = (req, res, next) => {
     // clear the token from the cookies
+    console.log("User logged out");
     res
         .status(200)
         .clearCookie('autotracksAuthToken')
@@ -90,7 +91,7 @@ exports.verify = asyncHandler(async (req, res, next) => {
         }
 
         // valid token, find the user and return in the response
-        const user = await Users.findById(decoded.userId).populate('dealership');
+        const user = await Users.findById(decoded.userId).populate('dealership role');
 
         // user not found
         if (!user) {

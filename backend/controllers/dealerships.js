@@ -128,8 +128,44 @@ exports.updateDealership = asyncHandler(async (req, res, next) => {
 // @route   DELETE /api/v1/dealerships/:dealershipId
 // @access  Authenticated
 exports.deleteDealership = asyncHandler(async (req, res, next) => {
-  // find the dealership with the id provided in the request params and delete
-  const dealership = await Dealerships.findByIdAndDelete(req.params.dealershipId);
+
+  // make sure the user deleting the dealership is an owner
+  const user = req.user;
+
+  if (!user.owner) {
+    return next(
+      new ErrorResponse('Not authorized to delete this dealership', 401)
+    )
+  }
+
+  // find the dealership being deleted
+  const dealership = await Dealerships.findById(req.params.dealershipId);
+
+  // make sure the user deleting the dealership is the owner
+  if (dealership.owner.toString() !== user._id.toString()) {
+    return next(
+      new ErrorResponse('Not authorized to delete this dealership', 401)
+    )
+  }
+
+  // find the # of dealership this owner currently has created
+  const dealershipCount = await Dealerships.countDocuments({ owner: user._id });
+
+  if (dealershipCount <= 1) {
+    return next(
+      new ErrorResponse('Cannot delete this dealership', 400)
+    )
+  }
+
+  // the user making the request is the dealerships owner and has more than one dealership created
+  // delete the dealership
+  await dealership.remove()
+
+  // get the new list of dealerships
+  const dealerships = await Dealerships.find({ owner: user._id });
+  
+  // set the next dealership as the active one for the owner
+  await Users.findByIdAndUpdate(user._id, { dealership: dealerships[0]._id })
 
   // if no dealership is returned, dealership was not found and send an error response
   if (!dealership) {
