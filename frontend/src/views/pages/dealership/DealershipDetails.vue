@@ -76,7 +76,18 @@ export default {
   }),
   methods: {
     deleteDealership() {
-      this.deleteDialog = false;
+      axios
+        .delete(`${this.$store.state.baseApiUrl}/dealerships/${this.$store.state.dealership._id}`, {
+          headers: {
+            'Authorization': `Bearer ${this.$store.state.token}`
+          }
+        })
+        .then(() => {
+          this.$router.go();
+        })
+        .catch(error => {
+          console.log(error);
+        })
     },
     resetDealership() {
       this.resetDialog = false;

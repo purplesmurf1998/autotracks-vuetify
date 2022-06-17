@@ -125,7 +125,17 @@
           @click:row="setSelectedVehicle"
           @pagination="handlePagination"
           class="row-pointer"
-        ></v-data-table>
+        >
+          <template v-slot:[`item.status`]="{ item }">
+            <v-icon
+              small
+              v-if="item.status == 'IN_REPAIR'"
+              color="accent"
+            >
+              mdi-car-wrench
+            </v-icon>
+          </template>
+        </v-data-table>
       </v-card>
       <v-card width="90%" class="mx-auto mb-10" v-if="tabs == 3" style="height: 100%">
         <GmapMap
@@ -268,6 +278,12 @@ export default {
         .then((response) => {
           let tempHeaders = [
             {
+              text: "",
+              align: "center",
+              value: "status",
+              width: "50"
+            },
+            {
               text: "VIN",
               value: "vin",
             },
@@ -309,6 +325,7 @@ export default {
               return result;
             }, {});
             properties.vin = vehicle.vin;
+            properties.status = vehicle.status;
             properties._id = vehicle._id;
             properties.location = vehicle.location;
             tempInventory.push(properties);

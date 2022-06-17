@@ -23,7 +23,7 @@
     </v-menu>
     <v-menu offset-y left bottom rounded min-width="100">
       <template v-slot:activator="{ on, attrs }">
-        <v-btn text rounded v-bind="attrs" v-on="on" small> Account </v-btn>
+        <v-btn text v-bind="attrs" v-on="on"> Account </v-btn>
       </template>
       <settings-dropdown />
     </v-menu>

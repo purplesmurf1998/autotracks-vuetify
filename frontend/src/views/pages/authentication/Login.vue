@@ -37,12 +37,11 @@
                   />
                 </v-card-text>
                 <v-divider></v-divider>
-                <v-card-actions>
-                  <v-btn color="primary" rounded type="submit"> Login </v-btn>
+                <v-card-actions class="mx-2 mt-2">
+                  <v-btn color="primary" type="submit"> Sign In </v-btn>
                   <v-spacer />
                   <p class="text-caption mb-0">
-                    Don't have an account?
-                    <router-link to="register">Register here</router-link>
+                    <router-link to="register">Forgot my password</router-link>
                   </p>
                 </v-card-actions>
               </form>

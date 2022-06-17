@@ -21,9 +21,42 @@
               </template>
 
               <v-list dense>
+                <v-list-item small @click="goToCreateSale">
+                  <v-list-item-icon class="mr-2">
+                    <v-icon>mdi-handshake-outline</v-icon>
+                  </v-list-item-icon>
+                  <v-list-item-title class="font-weight-regular"
+                    >Sell Vehicle</v-list-item-title
+                  >
+                </v-list-item>
+                <v-list-item small @click="goToCreateSale">
+                  <v-list-item-icon class="mr-2">
+                    <v-icon>mdi-alert-circle-outline</v-icon>
+                  </v-list-item-icon>
+                  <v-list-item-title class="font-weight-regular"
+                    >Flag Vehicle</v-list-item-title
+                  >
+                </v-list-item>
+                <v-list-item small @click="goToCreateSale">
+                  <v-list-item-icon class="mr-2">
+                    <v-icon>mdi-pencil-outline</v-icon>
+                  </v-list-item-icon>
+                  <v-list-item-title class="font-weight-regular"
+                    >Update Status</v-list-item-title
+                  >
+                </v-list-item>
+                <v-list-item small @click="goToCreateSale">
+                  <v-list-item-icon class="mr-2">
+                    <v-icon>mdi-map-marker-check-outline</v-icon>
+                  </v-list-item-icon>
+                  <v-list-item-title class="font-weight-regular"
+                    >Update Location</v-list-item-title
+                  >
+                </v-list-item>
+                <v-divider class="my-2"/>
                 <v-list-item small @click="showVehicleLocation" v-if="vehicle.location">
                   <v-list-item-icon class="mr-2">
-                    <v-icon>mdi-map-marker</v-icon>
+                    <v-icon>mdi-map-marker-outline</v-icon>
                   </v-list-item-icon>
                   <v-list-item-title class="font-weight-regular"
                     >View location on map</v-list-item-title
@@ -31,7 +64,7 @@
                 </v-list-item>
                 <v-list-item small @click="deletingVehicle = true">
                   <v-list-item-icon class="mr-2">
-                    <v-icon color="error">mdi-delete</v-icon>
+                    <v-icon color="error">mdi-delete-outline</v-icon>
                   </v-list-item-icon>
                   <v-list-item-title class="error--text font-weight-regular"
                     >Delete vehicle</v-list-item-title
@@ -88,6 +121,16 @@
               <p class="text-lg-button mb-0">Date Added</p>
               <p class="font-weight-light mb-0">{{ vehicle.date_added.toString().substring(0, 10) }}</p>
             </v-row>
+            <v-alert class="px-5 mb-0" color="accent" text dense outlined>
+              <v-row class="ma-0" justify="space-between" align="center">
+                <p class="text-lg-button mb-0">Status</p>
+                <v-icon small class="ml-3" color="accent">
+                  mdi-car-wrench
+                </v-icon>
+                <v-spacer />
+                <p class="font-weight-light mb-0" v-if="!vehicle.on_road_since">Getting Repaired</p>
+              </v-row>
+            </v-alert>
           </v-card-text>
         </v-card>
         <!-- Properties row -->
@@ -105,7 +148,7 @@
               <v-list dense>
                 <v-list-item small @click="editingVehicle = true">
                   <v-list-item-icon class="mr-2">
-                    <v-icon>mdi-pencil</v-icon>
+                    <v-icon>mdi-pencil-outline</v-icon>
                   </v-list-item-icon>
                   <v-list-item-title class="font-weight-regular"
                     >Edit vehicle properties</v-list-item-title
@@ -194,6 +237,9 @@ export default {
     messageType: null
   }),
   methods: {
+    goToCreateSale() {
+      this.$router.push(`/create-sale/vehicle/${this.vehicleId}`)
+    },
     editOnRoadSince() {
 
     },

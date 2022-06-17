@@ -14,6 +14,7 @@ import Zones from '../views/pages/zones/Zones';
 import Roles from '../views/pages/roles/Roles';
 import Inventory from '../views/pages/inventory/Inventory.vue';
 import ConfirmVehicleLocation from '../views/pages/location/ConfirmVehicleLocation.vue';
+import CreateSale from "../views/pages/sales/CreateSale.vue";
 // import auth pages
 import Login from '../views/pages/authentication/Login.vue';
 import Register from '../views/pages/authentication/Register.vue';
@@ -79,6 +80,14 @@ const routes = [
         path: 'inventory',
         name: 'Inventory',
         component: Inventory,
+        meta: {
+          authRequired: true
+        }
+      },
+      {
+        path: 'create-sale/vehicle/:vehicleId',
+        name: 'CreateSale',
+        component: CreateSale,
         meta: {
           authRequired: true
         }

@@ -1,9 +1,9 @@
 <template>
   <v-card>
-    <v-card-title class="text-md-body-1 d-flex justify-center">
+    <!-- <v-card-title class="text-md-body-1 d-flex justify-center">
       Settings
-    </v-card-title>
-    <v-list dense rounded>
+    </v-card-title> -->
+    <v-list dense>
       <v-list-item-group color="primary">
         <v-list-item>
           <v-list-item-icon>
