@@ -28,10 +28,10 @@
           <v-icon left dark class="mr-2"> mdi-plus </v-icon>
           Add Vehicle
         </v-btn>
-        <v-btn color="primary" text v-if="!$vuetify.breakpoint.mobile">
+        <!-- <v-btn color="primary" text v-if="!$vuetify.breakpoint.mobile">
           <v-icon left dark> mdi-download-outline </v-icon>
           Export
-        </v-btn>
+        </v-btn> -->
         <v-menu bottom left v-if="$vuetify.breakpoint.mobile">
           <template v-slot:activator="{ on, attrs }">
             <v-btn icon v-bind="attrs" v-on="on">

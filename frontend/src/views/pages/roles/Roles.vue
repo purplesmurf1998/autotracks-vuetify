@@ -22,7 +22,7 @@
         <v-divider />
         <v-card-text>
           <!-- Roles and Permissions Sub Header -->
-          <v-row v-if="activeTab == 0" class="pa-2" align="center">
+          <!-- <v-row v-if="activeTab == 0" class="pa-2" align="center">
             <p class="mb-0">
               {{ roleCount }} / 5 roles created for this account plan
             </p>
@@ -32,7 +32,7 @@
               :class="$vuetify.breakpoint.mobile ? 'mt-2' : 'ml-2'"
               >Upgrade Plan</v-btn
             >
-          </v-row>
+          </v-row> -->
         </v-card-text>
       </v-card>
     </v-card>

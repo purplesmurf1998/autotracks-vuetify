@@ -22,14 +22,14 @@
         </v-tabs>
         <v-divider />
         <v-card-text>
-          <v-row class="pa-2" align="center" v-if="activeTab == 1">
+          <!-- <v-row class="pa-2" align="center" v-if="activeTab == 1">
             <p class="mb-0" v-if="dealershipCount">
               {{ dealershipCount }} / 5 dealerships created for this account
               plan
             </p>
             <v-spacer />
             <v-btn color="primary"> Upgrade Plan </v-btn>
-          </v-row>
+          </v-row> -->
           <dealership-details id="dealership-details" v-if="activeTab == 0"/>
         </v-card-text>
       </v-card>
