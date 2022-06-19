@@ -375,6 +375,11 @@ export default {
           formatted_address: this.formattedAddress,
           lat: this.lat,
           lng: this.lng,
+        },
+        {
+          headers: {
+            'Authorization': `Bearer ${this.token}`
+          }
         })
         .then((response) => {
           this.updateAccount(response.data.payload);
@@ -388,6 +393,11 @@ export default {
       axios
         .put(`${this.$store.state.baseApiUrl}/users/${dealership.owner}`, {
           dealership: dealership._id,
+        },
+        {
+          headers: {
+            'Authorization': `Bearer ${this.token}`
+          }
         })
         .then(() => {
           localStorage.setItem("autotracksAuthToken", this.token);
