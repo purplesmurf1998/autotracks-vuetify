@@ -23,7 +23,7 @@ const VehicleSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['IN_STOCK', 'ALERT', 'SALE_REQUESTED', 'SALE_APPROVED', 'PREPPING', 'IN_REPAIR', 'IN_DELIVERY', 'DELIVERED'],
+    enum: ['IN_STOCK', 'ALERT', 'SOLD', 'PREPPING', 'IN_REPAIR', 'IN_DELIVERY', 'DELIVERED'],
     required: [true, 'Vehicle must have a status.'],
     default: 'IN_STOCK'
   },
