@@ -14,6 +14,7 @@
           color="primary"
           text
           v-if="!$vuetify.breakpoint.mobile"
+          class="mr-2"
           @click="editingPropertyOrder = true"
         >
           <v-icon left dark class="mr-2"> mdi-table-column </v-icon>
@@ -21,7 +22,6 @@
         </v-btn>
         <v-btn
           color="primary"
-          text
           v-if="!$vuetify.breakpoint.mobile"
           @click="addingVehicle = true"
         >
@@ -85,7 +85,7 @@
               clearable
             ></v-text-field>
             <v-spacer />
-            <v-btn color="primary">
+            <v-btn text color="primary">
               <v-icon left class="mr-2"> mdi-plus </v-icon>
               Add Filter
             </v-btn>
