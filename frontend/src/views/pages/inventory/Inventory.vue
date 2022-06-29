@@ -56,12 +56,6 @@
                 Add Vehicle
               </v-btn>
             </v-list-item>
-            <v-list-item>
-              <v-btn color="primary" text small>
-                <v-icon left dark class="mr-2"> mdi-download-outline </v-icon>
-                Export
-              </v-btn>
-            </v-list-item>
           </v-list>
         </v-menu>
       </v-toolbar>
@@ -85,7 +79,7 @@
               clearable
             ></v-text-field>
             <v-spacer />
-            <v-btn text color="primary">
+            <v-btn text color="primary" @click="addingFilter = true">
               <v-icon left class="mr-2"> mdi-plus </v-icon>
               Add Filter
             </v-btn>
@@ -186,6 +180,13 @@
         @vehicle-added="vehicleAdded"
       />
     </v-dialog>
+    <v-dialog max-width="500" v-model="addingFilter">
+      <add-filter
+        v-if="addingFilter"
+        @cancel="addingFilter = false"
+        @filter-added="filterAdded"
+      />
+    </v-dialog>
   </div>
 </template>
 
@@ -194,6 +195,7 @@ const axios = require("axios");
 import VehicleDetails from "./VehicleDetails.vue";
 import EditPropertyOrder from "./EditPropertyOrder.vue";
 import AddVehicle from "./AddVehicle.vue";
+import AddFilter from "./AddFilter.vue";
 import Vue from "vue";
 import * as VueGoogleMaps from "vue2-google-maps";
 
@@ -216,6 +218,7 @@ export default {
     zoom: 17,
     editingPropertyOrder: false,
     addingVehicle: false,
+    addingFilter: false,
     headers: [],
     inventory: [],
     sold: [],
@@ -246,6 +249,9 @@ export default {
     vehicleAdded() {
       this.addingVehicle = false;
       this.fetchVehicles();
+    },
+    filterAdded() {
+      this.addingFilter = false;
     },
     setSelectedVehicle(item) {
       let query = {};
@@ -414,6 +420,7 @@ export default {
     VehicleDetails,
     EditPropertyOrder,
     AddVehicle,
+    AddFilter,
   },
 };
 </script>
