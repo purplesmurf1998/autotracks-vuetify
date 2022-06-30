@@ -105,8 +105,12 @@
         >
           {{ filteredMapInventory.length }} result(s)
         </v-chip>
-        <v-chip small color="secondary" class="my-5 ml-3 text-caption" rounded>
+        <v-chip v-if="filtersSelected == 0" small color="secondary" class="my-5 ml-3 text-caption" rounded>
           No filters
+        </v-chip>
+        <v-chip v-if="filtersSelected > 0" small color="primary" class="my-5 ml-3 text-caption" rounded @click="clearFilters">
+          {{filtersSelected}} filter(s)
+          <v-icon small>mdi-close</v-icon>
         </v-chip>
       </div>
       <v-card width="90%" class="mx-auto" v-if="tabs < 3">
@@ -221,6 +225,7 @@ export default {
     editingPropertyOrder: false,
     addingVehicle: false,
     addingFilter: false,
+    filtersSelected: 0,
     headers: [],
     inventory: [],
     sold: [],
@@ -252,7 +257,12 @@ export default {
       this.addingVehicle = false;
       this.fetchVehicles();
     },
+    clearFilters() {
+      this.fetchVehicles();
+      this.filtersSelected = 0;
+    },
     filterAdded(payload) {
+      this.filtersSelected += Object.keys(payload).length;
       this.addingFilter = false;
       let filteredInventory = [];
       if (Object.keys(payload).length == 0) //if no filter is selected
@@ -275,7 +285,6 @@ export default {
           else if (payload[key].length >= 1 && isNaN(payload[key][0]) && isNaN(Date.parse(payload[key][0]))) { //This statement is supposed to handle List, Dropdown, and Text input types
             let flag = false;
             payload[key].forEach(item => {
-              console.log(item);
               if (currentVehicle[key] == item)
                 flag = true;
             })

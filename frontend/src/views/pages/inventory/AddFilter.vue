@@ -111,20 +111,17 @@ export default {
   }),
   methods: {
     validateFilterForm() {
-      console.log(this.filters);
       if (this.$refs.filterForm.validate()) this.save();
     },
     okDate(key) {
       this.date[key] = false;
-      console.log(this.filters[key])
     },
     cancelDate(key) {
       this.date[key] = false;
     },
     save() {
-      console.log("Saved")
       let payload = {};
-      for (var filter in this.filters) {
+      for (var filter in this.filters) { //Remove empty unused filters when the payload is sent to the inventory component
         if (this.filters[filter].length == 2) {
           if (this.filters[filter][0] != null || this.filters[filter][1] != null)
             payload[filter] = this.filters[filter];
@@ -132,8 +129,6 @@ export default {
         else if (this.filters[filter].length != 0)
           payload[filter] = this.filters[filter];
       }
-      console.log("TEST");
-      console.log(payload);
       this.$emit("filter-added", payload);      
     },
     cancel() {
