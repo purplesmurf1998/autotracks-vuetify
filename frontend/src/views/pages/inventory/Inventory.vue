@@ -252,9 +252,41 @@ export default {
       this.addingVehicle = false;
       this.fetchVehicles();
     },
-    filterAdded() {
+    filterAdded(payload) {
       this.addingFilter = false;
-
+      let filteredInventory = [];
+      if (Object.keys(payload).length == 0) //if no filter is selected
+        return;
+      this.inventory.forEach(currentVehicle => {
+        let vehiclePassedFilters = true;
+        for (var key in payload) {
+          if (!currentVehicle[key])
+            vehiclePassedFilters = false;
+          else if (payload[key].length == 2 && payload[key][0] == null && parseInt(currentVehicle[key]) > parseInt(payload[key][1])) //Min is null, max is set
+            vehiclePassedFilters = false;
+          else if (payload[key].length == 2 && payload[key][1] == null && parseInt(currentVehicle[key]) < parseInt(payload[key][0])) //Min is set, max is null
+            vehiclePassedFilters = false;
+          else if (payload[key].length == 2 && payload[key][0] != null && payload[key][1] != null && !isNaN(payload[key][0]) && !isNaN(payload[key][1]) && (parseInt(currentVehicle[key]) < parseInt(payload[key][0]) || parseInt(currentVehicle[key]) > parseInt(payload[key][1]))) //Min & Max are set
+            vehiclePassedFilters = false;
+          else if (payload[key].length == 2 && !isNaN(Date.parse(payload[key][0])) && !isNaN(Date.parse(payload[key][1])) && (Date.parse(currentVehicle[key]) <= Date.parse(payload[key][0]) || Date.parse(currentVehicle[key]) >= Date.parse(payload[key][1]))) //Date range is selected
+            vehiclePassedFilters = false;
+          else if (payload[key].length == 1 && !isNaN(Date.parse(payload[key][0])) && Date.parse(currentVehicle[key]) != Date.parse(payload[key][0])) //A single date is selected only. 
+            vehiclePassedFilters = false;
+          else if (payload[key].length >= 1 && isNaN(payload[key][0]) && isNaN(Date.parse(payload[key][0]))) { //This statement is supposed to handle List, Dropdown, and Text input types
+            let flag = false;
+            payload[key].forEach(item => {
+              console.log(item);
+              if (currentVehicle[key] == item)
+                flag = true;
+            })
+            if (!flag)
+              vehiclePassedFilters = false;
+          }
+        }
+        if (vehiclePassedFilters) //If the vehicle passed all the filters, return it
+          filteredInventory.push(currentVehicle);
+      })
+      this.inventory = filteredInventory;
     },
     setSelectedVehicle(item) {
       let query = {};

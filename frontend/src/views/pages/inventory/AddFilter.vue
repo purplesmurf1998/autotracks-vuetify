@@ -123,7 +123,18 @@ export default {
     },
     save() {
       console.log("Saved")
-      this.$emit("filter-added", this.filters);      
+      let payload = {};
+      for (var filter in this.filters) {
+        if (this.filters[filter].length == 2) {
+          if (this.filters[filter][0] != null || this.filters[filter][1] != null)
+            payload[filter] = this.filters[filter];
+        }
+        else if (this.filters[filter].length != 0)
+          payload[filter] = this.filters[filter];
+      }
+      console.log("TEST");
+      console.log(payload);
+      this.$emit("filter-added", payload);      
     },
     cancel() {
       this.$emit("cancel");
