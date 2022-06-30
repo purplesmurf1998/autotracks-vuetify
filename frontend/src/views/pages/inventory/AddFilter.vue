@@ -5,46 +5,44 @@
       <v-row align="center" v-if="fields.length == 0"
         ><v-progress-circular indeterminate color="primary" class="mx-auto"
       /></v-row>
-
       <v-form
-        v-if="fields.length > 0 && vehicle"
+        v-if="fields.length > 0 && filters"
         ref="vehicleForm"
         v-model="vehicleFormValid"
         lazy-validation
       >
         <div v-for="field in fields" :key="field.key">
             <div v-if="field.input_type == 'Number' || field.input_type == 'Currency'">
-                <label/> {{field.label}}
+                <v-row><label class="ml-3"/> {{field.label}} </v-row>
                 <v-row>
                     <v-col>
                         <v-text-field
                             outlined
                             dense
-                            label="Min Value"
-                            v-model="vehicle[field.key].value"
+                            v-model="filters[field.key][0]"
+                            placeholder="Min Value"
                             append-icon="mdi-sort-numeric-variant"
-                            :rules="fieldRules[field.key]"
+                            :rules="[minRules[field.key]]"
                         />
                     </v-col>
                     <v-col>
                         <v-text-field
                             outlined
                             dense
-                            label="Max Value"
-                            v-model="vehicle[field.key].value"
+                            v-model="filters[field.key][1]"
+                            placeholder="Max Value"
                             append-icon="mdi-sort-numeric-variant"
-                            :rules="fieldRules[field.key]"
+                            :rules="[maxRules[field.key]]"
                         />
                     </v-col>
                 </v-row>
             </div>
             <div v-if="field.input_type == 'Date'">
-                <label/> {{field.label}}
                 <v-row>
                     <v-col>
                         <v-menu
-                            :ref="date"
-                            v-model="date"
+                            :ref="date[field.key]"
+                            v-model="date[field.key]"
                             :close-on-content-click="false"
                             transition="scale-transition"
                             offset-y
@@ -52,8 +50,8 @@
                         >
                             <template v-slot:activator="{ on, attrs }">
                             <v-text-field
-                                v-model="dateRangeText"
-                                label="Date Range"
+                                v-model="filters[field.key]"
+                                :label="field.label"
                                 append-icon="mdi-calendar"
                                 v-bind="attrs"
                                 v-on="on"
@@ -61,12 +59,12 @@
                                 dense
                             />
                             </template>
-                            <v-date-picker v-model="dates" no-title scrollable range>
+                            <v-date-picker v-model="filters[field.key]" no-title scrollable range>
                             <v-spacer></v-spacer>
-                            <v-btn text color="primary" @click="cancelDate">
+                            <v-btn text color="primary" @click="cancelDate(field.key)">
                                 Cancel
                             </v-btn>
-                            <v-btn text color="primary" @click="okDate">
+                            <v-btn text color="primary" @click="okDate(field.key)">
                                 OK
                             </v-btn>
                             </v-date-picker>
@@ -74,87 +72,17 @@
                     </v-col>
                 </v-row>
             </div>
-          <v-text-field
-            v-if="field.input_type == 'Text'"
+          <v-autocomplete
+            v-if="field.input_type == 'Text' || field.input_type == 'Dropdown' || field.input_type == 'List'"
             outlined
             dense
             :label="field.label"
-            v-model="vehicle[field.key].value"
-            append-icon="mdi-alphabetical"
-            :rules="fieldRules[field.key]"
-          />
-          <v-select
-            outlined
-            dense
-            v-model="vehicle[field.key].value"
-            :items="field.options"
-            :label="field.label"
-            v-if="field.input_type == 'Dropdown'"
-            offset-y
-            :clearable="!field.required"
-            :rules="fieldRules[field.key]"
-          />
-          <v-combobox
-            v-model="vehicle[field.key].value"
-            :filter="filter"
-            :hide-no-data="!search"
-            :items="items"
-            :search-input.sync="search"
-            hide-selected
-            label="Options"
-            outlined
-            dense
-            multiple
+            :items="vehiclePropertyValues[field.key]"
+            v-model="filters[field.key]"
+            chips
             small-chips
-            v-if="field.input_type == 'List'"
-          >
-            <template v-slot:no-data>
-              <v-list-item>
-                <v-chip color="primary" label small>
-                  {{ search }}
-                </v-chip>
-              </v-list-item>
-            </template>
-            <template v-slot:selection="{ attrs, item, parent, selected }">
-              <v-chip
-                v-bind="attrs"
-                color="primary"
-                :input-value="selected"
-                label
-                small
-              >
-                <span class="pr-2">
-                  {{ item }}
-                </span>
-                <v-icon small @click="parent.selectItem(item)">
-                  $delete
-                </v-icon>
-              </v-chip>
-            </template>
-            <template v-slot:item="{ index, item }">
-              <v-text-field
-                v-if="editing === item"
-                v-model="editing"
-                autofocus
-                flat
-                background-color="transparent"
-                hide-details
-                solo
-                @keyup.enter="edit(index, item)"
-              ></v-text-field>
-              <v-chip v-else color="primary" dark label small>
-                {{ item }}
-              </v-chip>
-              <v-spacer></v-spacer>
-              <v-list-item-action @click.stop>
-                <v-btn icon @click.stop.prevent="edit(index, item)">
-                  <v-icon>{{
-                    editing !== item ? "mdi-pencil" : "mdi-check"
-                  }}</v-icon>
-                </v-btn>
-              </v-list-item-action>
-            </template>
-          </v-combobox>
+            multiple
+          />
         </div>
       </v-form>
     </v-card-text>
@@ -172,61 +100,34 @@ const axios = require("axios");
 
 export default {
   name: "AddFilter",
-
+  props: ["inventoryFilters"],
   data: () => ({
+    vehiclePropertyValues: {},
+    filters: null,
     fields: [],
-    vehicle: {},
     fieldRules: {},
     vehicleFormValid: true,
-    dates: [],
-    date: false,
+    minRules: [],
+    maxRules: [],
+    date: {},
     activator: null,
-    editing: null,
-    editingIndex: -1,
-    items: [
-      { header: "Start typing in the field to create a dropdown option" },
-    ],
-    search: null,
   }),
   methods: {
     validateVehicleForm() {
+      console.log(this.filters);
       if (this.$refs.vehicleForm.validate()) this.save();
     },
-    okDate() {
-      this.date = false;
-      console.log(this.date);
-      console.log(this.dates);
+    okDate(key) {
+      this.date[key] = false;
+      console.log(this.filters[key])
     },
-    cancelDate() {
-      this.date = false;
-      this.dates = [];
+    cancelDate(key) {
+      this.date[key] = false;
     },
     save() {
       // remove the vin from the vehicle object
-      let properties = this.vehicle;
-      let vin = properties.vin;
-      delete properties.vin;
-      
-      axios
-        .post(
-          `${this.$store.state.baseApiUrl}/vehicles`, 
-          {
-            dealership: this.$store.state.loggedInUser.dealership,
-            vin: vin.value,
-            properties,
-          },
-          {
-            headers: {
-              'Authorization': `Bearer ${this.$store.state.token}`
-            }
-          }
-        )
-        .then((response) => {
-          this.$emit("vehicle-added", response.data.payload);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+      console.log("Saved")
+      this.$emit("filter-added", this.filters);      
     },
     cancel() {
       this.$emit("cancel");
@@ -242,11 +143,38 @@ export default {
           }
         })
         .then((response) => {
-          console.log(response.data.payload)
           let tempFields = [];
-          let tempVehicle = {};
-          let tempFieldRules = {};
+          let tempMinRules = {};
+          let tempMaxRules = {};
+          let tempFilters = {};
           response.data.payload.forEach((property) => {
+            if (property.input_type == "Number" || property.input_type == "Currency") { //This if statement is supposed to set the min and max rules for certain properties
+              // tempMinRules[property.key] =
+              //   (v) => {
+              //     console.log(property.key);
+              //     console.log(tempFilters[property.key][1])
+              //     if (tempFilters[property.key][1] && v > tempFilters[property.key][1])
+              //       return 'The min value must be smaller than the max value'
+              //   };
+              // tempMaxRules[property.key] =
+              //   (v) => {
+              //     console.log(property.key);
+              //     console.log(tempFilters[property.key][0])
+              //     console.log(v);
+              //     if (tempFilters[property.key][0] != undefined) {
+              //       if (v < tempFilters[property.key][0])
+              //         return 'The max value must be greater than the max value'
+              //       else if (v >= tempFilters[property.key][0])
+              //         return true;
+              //     }
+              //     else
+              //       return false;
+              //   }
+            }
+            if (property.input_type == "Currency" || property.input_type == "Number" || property.input_type == "Date")
+              tempFilters[property.key] = [null, null];
+            else
+              tempFilters[property.key] = [];
             tempFields.push({
               label: property.label,
               input_type: property.input_type,
@@ -254,66 +182,46 @@ export default {
               required: property.required,
               options: property.options,
             });
-            tempVehicle[property.key] = {
-              label: property.label,
-              value: "",
-              input_type: property.input_type
-            };
-            if (property.required) {
-              tempFieldRules[property.key] = [
-                (v) => !!v || `${property.label} is required`,
-              ];
-            }
-            if (property.input_type == "List") {
-              tempVehicle[property.key].value = [];
-              this.$watch(`vehicle.${property.key}.value`, (val, prev) => {
-                if (!prev) return;
-                if (val.length === prev.length) return;
-
-                this.vehicle[property.key].value = val.map((v) => {
-                  return v;
-                });
-              });
-            }
           });
           this.fields = tempFields;
-          this.vehicle = tempVehicle;
-          this.fieldRules = tempFieldRules;
+          this.minRules = tempMinRules;
+          this.maxRules = tempMaxRules;
+          this.filters = this.inventoryFilters ? this.inventoryFilters : tempFilters;
         })
         .catch((error) => {
           console.log(error);
         });
     },
-    edit(index, item) {
-      if (!this.editing) {
-        this.editing = item;
-        this.editingIndex = index;
-      } else {
-        this.editing = null;
-        this.editingIndex = -1;
-      }
-    },
-    filter(item, queryText, itemText) {
-      if (item.header) return false;
-
-      const hasValue = (val) => (val != null ? val : "");
-
-      const text = hasValue(itemText);
-      const query = hasValue(queryText);
-
-      return (
-        text.toString().toLowerCase().indexOf(query.toString().toLowerCase()) >
-        -1
-      );
+    fetchVehicles () { //This method is called when the modal is rendered to fetch all possible values for each vehicle property
+      axios
+        .get(`${this.$store.state.baseApiUrl}/vehicles`, {
+          params: {
+            dealership: this.$store.state.loggedInUser.dealership,
+          },
+          headers: {
+            'Authorization': `Bearer ${this.$store.state.token}`
+          }
+        })
+        .then((response) => {
+          let propertyValues = {};
+          response.data.payload.forEach(vehicle => {
+            for (const property in vehicle.properties) {
+              if (propertyValues[property] === undefined)
+                propertyValues[property] = [];
+              if (!propertyValues[property].includes(vehicle.properties[property].value) && vehicle.properties[property].value != null)
+                propertyValues[property].push(vehicle.properties[property].value);
+            }
+          })
+          this.vehiclePropertyValues = propertyValues;
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     },
   },
   mounted() {
     this.fetchProperties();
-  },
-  computed: {
-    dateRangeText () {
-      return this.dates.join(' ~ ')
-    },
+    this.fetchVehicles();
   },
 };
 </script>

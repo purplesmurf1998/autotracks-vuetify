@@ -185,6 +185,7 @@
         v-if="addingFilter"
         @cancel="addingFilter = false"
         @filter-added="filterAdded"
+        :inventoryFilters="inventoryFilters"
       />
     </v-dialog>
   </div>
@@ -210,6 +211,7 @@ export default {
 
   data: () => ({
     tabs: 0,
+    inventoryFilters: null,
     search: "",
     filters: [],
     groupBy: null,
@@ -252,6 +254,7 @@ export default {
     },
     filterAdded() {
       this.addingFilter = false;
+
     },
     setSelectedVehicle(item) {
       let query = {};
