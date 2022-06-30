@@ -7,8 +7,8 @@
       /></v-row>
       <v-form
         v-if="fields.length > 0 && filters"
-        ref="vehicleForm"
-        v-model="vehicleFormValid"
+        ref="filterForm"
+        v-model="filterFormValid"
         lazy-validation
       >
         <div v-for="field in fields" :key="field.key">
@@ -22,7 +22,6 @@
                             v-model="filters[field.key][0]"
                             placeholder="Min Value"
                             append-icon="mdi-sort-numeric-variant"
-                            :rules="[minRules[field.key]]"
                         />
                     </v-col>
                     <v-col>
@@ -32,7 +31,7 @@
                             v-model="filters[field.key][1]"
                             placeholder="Max Value"
                             append-icon="mdi-sort-numeric-variant"
-                            :rules="[maxRules[field.key]]"
+                            :rules="[fieldRules[field.key]]"
                         />
                     </v-col>
                 </v-row>
@@ -89,7 +88,7 @@
     <v-divider></v-divider>
     <v-card-actions>
       <v-spacer></v-spacer>
-      <v-btn color="primary" @click="validateVehicleForm"> Save </v-btn>
+      <v-btn color="primary" @click="validateFilterForm"> Save </v-btn>
       <v-btn color="secondary" text @click="cancel"> Cancel </v-btn>
     </v-card-actions>
   </v-card>
@@ -106,16 +105,14 @@ export default {
     filters: null,
     fields: [],
     fieldRules: {},
-    vehicleFormValid: true,
-    minRules: [],
-    maxRules: [],
+    filterFormValid: true,
     date: {},
     activator: null,
   }),
   methods: {
-    validateVehicleForm() {
+    validateFilterForm() {
       console.log(this.filters);
-      if (this.$refs.vehicleForm.validate()) this.save();
+      if (this.$refs.filterForm.validate()) this.save();
     },
     okDate(key) {
       this.date[key] = false;
@@ -125,7 +122,6 @@ export default {
       this.date[key] = false;
     },
     save() {
-      // remove the vin from the vehicle object
       console.log("Saved")
       this.$emit("filter-added", this.filters);      
     },
@@ -144,33 +140,9 @@ export default {
         })
         .then((response) => {
           let tempFields = [];
-          let tempMinRules = {};
-          let tempMaxRules = {};
+          let tempRules = {};
           let tempFilters = {};
           response.data.payload.forEach((property) => {
-            if (property.input_type == "Number" || property.input_type == "Currency") { //This if statement is supposed to set the min and max rules for certain properties
-              // tempMinRules[property.key] =
-              //   (v) => {
-              //     console.log(property.key);
-              //     console.log(tempFilters[property.key][1])
-              //     if (tempFilters[property.key][1] && v > tempFilters[property.key][1])
-              //       return 'The min value must be smaller than the max value'
-              //   };
-              // tempMaxRules[property.key] =
-              //   (v) => {
-              //     console.log(property.key);
-              //     console.log(tempFilters[property.key][0])
-              //     console.log(v);
-              //     if (tempFilters[property.key][0] != undefined) {
-              //       if (v < tempFilters[property.key][0])
-              //         return 'The max value must be greater than the max value'
-              //       else if (v >= tempFilters[property.key][0])
-              //         return true;
-              //     }
-              //     else
-              //       return false;
-              //   }
-            }
             if (property.input_type == "Currency" || property.input_type == "Number" || property.input_type == "Date")
               tempFilters[property.key] = [null, null];
             else
@@ -182,10 +154,20 @@ export default {
               required: property.required,
               options: property.options,
             });
+            if (property.input_type == "Number" || property.input_type == "Currency") { //This if statement is supposed to set the min and max rules for certain properties
+              tempRules[property.key] =
+                (v) => {
+                  if (!tempFilters[property.key][0] || v == null) //If one of the values or both are not defined, return true and use the value that is defined as a filter
+                    return true;
+                  else if (v < parseInt(tempFilters[property.key][0]))
+                    return 'The max value must be greater than the max value';
+                  else
+                    return true;
+                }
+            }
           });
           this.fields = tempFields;
-          this.minRules = tempMinRules;
-          this.maxRules = tempMaxRules;
+          this.fieldRules = tempRules;
           this.filters = this.inventoryFilters ? this.inventoryFilters : tempFilters;
         })
         .catch((error) => {
