@@ -252,7 +252,11 @@ export default {
         case 'Currency': return `$ ${parseFloat(property.value).toFixed(2)}`;
         case 'Date': return property.value;
         case 'Dropdown': return property.value;
-        case 'List': return property.value.join();
+        case 'List': 
+          if (Array.isArray(property.value) && property.value.length > 0) 
+            return property.value.join();
+          else
+            return property.value;
         default: return property.value;
       }
     },
