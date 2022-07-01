@@ -282,7 +282,16 @@ export default {
             vehiclePassedFilters = false;
           else if (payload[key].length == 1 && !isNaN(Date.parse(payload[key][0])) && Date.parse(currentVehicle[key]) != Date.parse(payload[key][0])) //A single date is selected only. 
             vehiclePassedFilters = false;
-          else if (payload[key].length >= 1 && isNaN(payload[key][0]) && isNaN(Date.parse(payload[key][0]))) { //This statement is supposed to handle List, Dropdown, and Text input types
+          else if (payload[key].length >= 1 && Array.isArray(payload[key][0])) { //This statement handles List input_type
+            let flag = false;
+            payload[key].forEach(item => {
+              if (JSON.stringify(currentVehicle[key]) == JSON.stringify(item))
+                flag = true;
+            })
+            if (!flag)
+              vehiclePassedFilters = false;
+          }
+          else if (payload[key].length >= 1 && isNaN(payload[key][0]) && isNaN(Date.parse(payload[key][0]))) { //This statement is supposed to handle Dropdown, and Text input types
             let flag = false;
             payload[key].forEach(item => {
               if (currentVehicle[key] == item)

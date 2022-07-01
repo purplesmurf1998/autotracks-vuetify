@@ -196,7 +196,7 @@ export default {
             for (const property in vehicle.properties) {
               if (propertyValues[property] === undefined)
                 propertyValues[property] = [];
-              if (!propertyValues[property].includes(vehicle.properties[property].value) && vehicle.properties[property].value != null)
+              if (!propertyValues[property].includes(vehicle.properties[property].value) && vehicle.properties[property].value != null && vehicle.properties[property].value.length != 0)
                 propertyValues[property].push(vehicle.properties[property].value);
             }
           })
