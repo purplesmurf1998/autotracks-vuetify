@@ -21,28 +21,20 @@
               </template>
 
               <v-list dense>
-                <v-list-item small @click="goToCreateSale">
+                <v-list-item small @click="updateVehicleStatusModal=true">
                   <v-list-item-icon class="mr-2">
-                    <v-icon>mdi-handshake-outline</v-icon>
+                    <v-icon>mdi-pencil-outline</v-icon>
                   </v-list-item-icon>
                   <v-list-item-title class="font-weight-regular"
-                    >Sell Vehicle</v-list-item-title
+                    >Update Vehicle Status</v-list-item-title
                   >
                 </v-list-item>
-                <v-list-item small @click="goToCreateSale">
+                <v-list-item small>
                   <v-list-item-icon class="mr-2">
                     <v-icon>mdi-alert-circle-outline</v-icon>
                   </v-list-item-icon>
                   <v-list-item-title class="font-weight-regular"
                     >Flag Vehicle</v-list-item-title
-                  >
-                </v-list-item>
-                <v-list-item small @click="goToCreateSale">
-                  <v-list-item-icon class="mr-2">
-                    <v-icon>mdi-pencil-outline</v-icon>
-                  </v-list-item-icon>
-                  <v-list-item-title class="font-weight-regular"
-                    >Update Status</v-list-item-title
                   >
                 </v-list-item>
                 <v-list-item small @click="goToCreateSale">
@@ -128,7 +120,7 @@
                   mdi-car-wrench
                 </v-icon>
                 <v-spacer />
-                <p class="font-weight-light mb-0" v-if="!vehicle.on_road_since">Getting Repaired</p>
+                <p class="font-weight-light mb-0" v-if="!vehicle.on_road_since">{{vehicle.status}}</p>
               </v-row>
             </v-alert>
           </v-card-text>
@@ -207,6 +199,14 @@
           @vehicle-updated="vehicleUpdated"
         />
       </v-dialog>
+      <v-dialog max-width="500" v-model="updateVehicleStatusModal">
+        <UpdateVehicleStatus
+          v-if="updateVehicleStatusModal"
+          :vehicle="vehicle"
+          @cancel="updateVehicleStatusModal = false"
+          @vehicle-updated="vehicleUpdated"
+        />
+      </v-dialog>
     </v-card>
   </div>
 </template>
@@ -215,6 +215,7 @@
 import axios from "axios";
 import DeleteDialog from "../../../components/DeleteDialog.vue";
 import EditVehicle from "./EditVehicle.vue";
+import UpdateVehicleStatus from "./UpdateVehicleStatus.vue";
 
 export default {
   name: "VehicleDetails",
@@ -231,6 +232,7 @@ export default {
   data: () => ({
     deletingVehicle: false,
     editingVehicle: false,
+    updateVehicleStatusModal: false,
     vehicle: null,
     loading: true,
     message: null,
@@ -250,7 +252,11 @@ export default {
         case 'Currency': return `$ ${parseFloat(property.value).toFixed(2)}`;
         case 'Date': return property.value;
         case 'Dropdown': return property.value;
-        case 'List': return property.value.join();
+        case 'List': 
+          if (Array.isArray(property.value) && property.value.length > 0) 
+            return property.value.join();
+          else
+            return property.value;
         default: return property.value;
       }
     },
@@ -258,9 +264,9 @@ export default {
       this.$emit("show-vehicle-location");
     },
     vehicleUpdated(updatedVehicle) {
-      this.vehicle.properties = updatedVehicle.properties;
-      this.editingVehicle = false;
-      this.showMessage('success', 'Vehicle properties have been updated successfully.');
+      this.vehicle = updatedVehicle;
+      this.editingVehicle == false ? this.updateVehicleStatusModal = false : this.editingVehicle = false;
+      this.showMessage('success', 'Vehicle has been updated successfully.');
     },
     confirmDeleteVehicle() {
       axios
@@ -308,7 +314,8 @@ export default {
   },
   components: {
     DeleteDialog,
-    EditVehicle
+    EditVehicle,
+    UpdateVehicleStatus,
   },
 };
 </script>

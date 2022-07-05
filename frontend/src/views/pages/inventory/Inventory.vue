@@ -14,6 +14,7 @@
           color="primary"
           text
           v-if="!$vuetify.breakpoint.mobile"
+          class="mr-2"
           @click="editingPropertyOrder = true"
         >
           <v-icon left dark class="mr-2"> mdi-table-column </v-icon>
@@ -21,17 +22,16 @@
         </v-btn>
         <v-btn
           color="primary"
-          text
           v-if="!$vuetify.breakpoint.mobile"
           @click="addingVehicle = true"
         >
           <v-icon left dark class="mr-2"> mdi-plus </v-icon>
           Add Vehicle
         </v-btn>
-        <v-btn color="primary" text v-if="!$vuetify.breakpoint.mobile">
+        <!-- <v-btn color="primary" text v-if="!$vuetify.breakpoint.mobile">
           <v-icon left dark> mdi-download-outline </v-icon>
           Export
-        </v-btn>
+        </v-btn> -->
         <v-menu bottom left v-if="$vuetify.breakpoint.mobile">
           <template v-slot:activator="{ on, attrs }">
             <v-btn icon v-bind="attrs" v-on="on">
@@ -54,12 +54,6 @@
               <v-btn color="primary" text small @click="addingVehicle = true">
                 <v-icon left dark class="mr-2"> mdi-plus </v-icon>
                 Add Vehicle
-              </v-btn>
-            </v-list-item>
-            <v-list-item>
-              <v-btn color="primary" text small>
-                <v-icon left dark class="mr-2"> mdi-download-outline </v-icon>
-                Export
               </v-btn>
             </v-list-item>
           </v-list>
@@ -85,7 +79,7 @@
               clearable
             ></v-text-field>
             <v-spacer />
-            <v-btn color="primary">
+            <v-btn text color="primary" @click="addingFilter = true">
               <v-icon left class="mr-2"> mdi-plus </v-icon>
               Add Filter
             </v-btn>
@@ -111,8 +105,12 @@
         >
           {{ filteredMapInventory.length }} result(s)
         </v-chip>
-        <v-chip small color="secondary" class="my-5 ml-3 text-caption" rounded>
+        <v-chip v-if="filtersSelected == 0" small color="secondary" class="my-5 ml-3 text-caption" rounded>
           No filters
+        </v-chip>
+        <v-chip v-if="filtersSelected > 0" small color="primary" class="my-5 ml-3 text-caption" rounded @click="clearFilters">
+          {{filtersSelected}} filter(s)
+          <v-icon small>mdi-close</v-icon>
         </v-chip>
       </div>
       <v-card width="90%" class="mx-auto" v-if="tabs < 3">
@@ -186,6 +184,14 @@
         @vehicle-added="vehicleAdded"
       />
     </v-dialog>
+    <v-dialog max-width="500" v-model="addingFilter">
+      <add-filter
+        v-if="addingFilter"
+        @cancel="addingFilter = false"
+        @filter-added="filterAdded"
+        :inventoryFilters="inventoryFilters"
+      />
+    </v-dialog>
   </div>
 </template>
 
@@ -194,6 +200,7 @@ const axios = require("axios");
 import VehicleDetails from "./VehicleDetails.vue";
 import EditPropertyOrder from "./EditPropertyOrder.vue";
 import AddVehicle from "./AddVehicle.vue";
+import AddFilter from "./AddFilter.vue";
 import Vue from "vue";
 import * as VueGoogleMaps from "vue2-google-maps";
 
@@ -208,6 +215,7 @@ export default {
 
   data: () => ({
     tabs: 0,
+    inventoryFilters: null,
     search: "",
     filters: [],
     groupBy: null,
@@ -216,6 +224,8 @@ export default {
     zoom: 17,
     editingPropertyOrder: false,
     addingVehicle: false,
+    addingFilter: false,
+    filtersSelected: 0,
     headers: [],
     inventory: [],
     sold: [],
@@ -246,6 +256,55 @@ export default {
     vehicleAdded() {
       this.addingVehicle = false;
       this.fetchVehicles();
+    },
+    clearFilters() {
+      this.fetchVehicles();
+      this.filtersSelected = 0;
+    },
+    filterAdded(payload) {
+      this.filtersSelected += Object.keys(payload).length;
+      this.addingFilter = false;
+      let filteredInventory = [];
+      if (Object.keys(payload).length == 0) //if no filter is selected
+        return;
+      this.inventory.forEach(currentVehicle => {
+        let vehiclePassedFilters = true;
+        for (var key in payload) {
+          if (!currentVehicle[key])
+            vehiclePassedFilters = false;
+          else if (payload[key].length == 2 && payload[key][0] == null && parseInt(currentVehicle[key]) > parseInt(payload[key][1])) //Min is null, max is set
+            vehiclePassedFilters = false;
+          else if (payload[key].length == 2 && payload[key][1] == null && parseInt(currentVehicle[key]) < parseInt(payload[key][0])) //Min is set, max is null
+            vehiclePassedFilters = false;
+          else if (payload[key].length == 2 && payload[key][0] != null && payload[key][1] != null && !isNaN(payload[key][0]) && !isNaN(payload[key][1]) && (parseInt(currentVehicle[key]) < parseInt(payload[key][0]) || parseInt(currentVehicle[key]) > parseInt(payload[key][1]))) //Min & Max are set
+            vehiclePassedFilters = false;
+          else if (payload[key].length == 2 && !isNaN(Date.parse(payload[key][0])) && !isNaN(Date.parse(payload[key][1])) && (Date.parse(currentVehicle[key]) <= Date.parse(payload[key][0]) || Date.parse(currentVehicle[key]) >= Date.parse(payload[key][1]))) //Date range is selected
+            vehiclePassedFilters = false;
+          else if (payload[key].length == 1 && !isNaN(Date.parse(payload[key][0])) && Date.parse(currentVehicle[key]) != Date.parse(payload[key][0])) //A single date is selected only. 
+            vehiclePassedFilters = false;
+          else if (payload[key].length >= 1 && Array.isArray(payload[key][0])) { //This statement handles List input_type
+            let flag = false;
+            payload[key].forEach(item => {
+              if (JSON.stringify(currentVehicle[key]) == JSON.stringify(item))
+                flag = true;
+            })
+            if (!flag)
+              vehiclePassedFilters = false;
+          }
+          else if (payload[key].length >= 1 && isNaN(payload[key][0]) && isNaN(Date.parse(payload[key][0]))) { //This statement is supposed to handle Dropdown, and Text input types
+            let flag = false;
+            payload[key].forEach(item => {
+              if (currentVehicle[key] == item)
+                flag = true;
+            })
+            if (!flag)
+              vehiclePassedFilters = false;
+          }
+        }
+        if (vehiclePassedFilters) //If the vehicle passed all the filters, return it
+          filteredInventory.push(currentVehicle);
+      })
+      this.inventory = filteredInventory;
     },
     setSelectedVehicle(item) {
       let query = {};
@@ -414,6 +473,7 @@ export default {
     VehicleDetails,
     EditPropertyOrder,
     AddVehicle,
+    AddFilter,
   },
 };
 </script>
