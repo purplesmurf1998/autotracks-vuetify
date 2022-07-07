@@ -22,6 +22,7 @@ const dealershipRoutes = require('./routes/dealerships');
 const roleRoutes = require('./routes/roles');
 const propertyRoutes = require('./routes/properties');
 const vehicleRoutes = require('./routes/vehicles');
+const SubscriptionsRoutes = require('./routes/subscriptions');
 
 // load in environment variables from config.env
 // this lets us access env. variables by using proccess.env.[VARIABLE_NAME]
@@ -62,6 +63,7 @@ app.use('/api/v1/dealerships', dealershipRoutes);
 app.use('/api/v1/roles', roleRoutes);
 app.use('/api/v1/properties', propertyRoutes);
 app.use('/api/v1/vehicles', vehicleRoutes);
+app.use('/api/v1/subscriptions', SubscriptionsRoutes);
 
 // mount error handler middleware
 app.use(errorHandler);

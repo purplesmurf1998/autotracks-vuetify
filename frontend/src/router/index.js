@@ -13,6 +13,7 @@ import Properties from '../views/pages/properties/Properties';
 import Zones from '../views/pages/zones/Zones';
 import Roles from '../views/pages/roles/Roles';
 import Inventory from '../views/pages/inventory/Inventory.vue';
+import Subscriptions from '../views/pages/subscriptions/Subscriptions.vue';
 import ConfirmVehicleLocation from '../views/pages/location/ConfirmVehicleLocation.vue';
 // import auth pages
 import Login from '../views/pages/authentication/Login.vue';
@@ -47,6 +48,14 @@ const routes = [
         path: 'accounts',
         name: 'Accounts',
         component: Accounts,
+        meta: {
+          authRequired: true
+        }
+      },
+      {
+        path: 'subscriptions',
+        name: 'Subscriptions',
+        component: Subscriptions,
         meta: {
           authRequired: true
         }
