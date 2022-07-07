@@ -19,6 +19,7 @@
                         <v-text-field
                             outlined
                             dense
+                            type="number"
                             v-model="filters[field.key][0]"
                             placeholder="Min Value"
                             append-icon="mdi-sort-numeric-variant"
@@ -28,6 +29,7 @@
                         <v-text-field
                             outlined
                             dense
+                            type="number"
                             v-model="filters[field.key][1]"
                             placeholder="Max Value"
                             append-icon="mdi-sort-numeric-variant"
@@ -166,7 +168,7 @@ export default {
                   if (!tempFilters[property.key][0] || v == null) //If one of the values or both are not defined, return true and use the value that is defined as a filter
                     return true;
                   else if (v < parseInt(tempFilters[property.key][0]))
-                    return 'The max value must be greater than the max value';
+                    return 'The max value must be greater than the min value';
                   else
                     return true;
                 }
