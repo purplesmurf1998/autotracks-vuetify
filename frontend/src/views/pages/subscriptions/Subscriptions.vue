@@ -34,13 +34,21 @@
           </v-list>
         </v-menu>
       </v-toolbar>
-      <v-card width="90%" class="mx-auto">
+      <v-card width="90%" class="mx-auto" style="margin-top: 49px">
         <v-data-table
           dense
           :headers="headers"
           :items="items"
           class="row-pointer"
         >
+        <template slot="item.status" slot-scope="{ item }">
+            <v-switch v-model="item.status" @click="toggleStatus(item._id, item.status)"></v-switch>
+        </template>
+        <template v-slot:[`item.actions`]="{ item }">
+          <v-icon color="error" @click="deletingSubscriptionModal(item._id)">
+            mdi-delete
+          </v-icon>
+        </template>
         </v-data-table>
       </v-card>
     </v-card>
@@ -50,6 +58,20 @@
         @cancel="addingSubscription = false"
         @subscription-added="subscriptionAdded"
       />
+    </v-dialog>
+    <v-dialog max-width="500" v-model="deletingSubscription">
+      <v-card>
+    <v-card-title class="text-h6"> Adding Subscription </v-card-title>
+    <v-card-text>
+      <h3>Are you sure you want to delete this subscription? </h3>
+    </v-card-text>
+    <v-divider></v-divider>
+    <v-card-actions>
+      <v-spacer></v-spacer>
+      <v-btn color="error" @click="deleteSubscription"> Delete </v-btn>
+      <v-btn dense outlined text @click="deletingSubscription = false"> Cancel </v-btn>
+    </v-card-actions>
+  </v-card>
     </v-dialog>
   </div>
 </template>
@@ -62,67 +84,113 @@ export default {
   name: "Subscriptions",
 
   data: () => ({
+    deletingSubscription: false,
     addingSubscription: false,
+    subscriptionID: null,
     headers: [
         {
             text: "Event Type",
-            value: "event type",
+            value: "event_type",
         },
         {
             text: "Property",
             value: "property",
         },
         {
-            text: "Value",
-            value: "value",
+            text: "Values",
+            value: "values",
         },
         {
             text: "Status",
             value: "status",
         },
-    ],
-    items: [ 
         {
-            "event type": "Value",
-            property: "test",
-            value: "value1",
-            status: "Enabled"
-        },
-        {
-            text: "Value",
-            value: "value2",
-        },
-        {
-            text: "Value",
-            value: "value3",
-        },
-        {
-            text: "Value",
-            value: "value4",
+            text: "Actions",
+            value: "actions",
+            align: "start"
         },
     ],
+    items: [],
+    status: false,
   }),
   methods: {
     subscriptionAdded() {
       this.addingSubscription = false;
       this.fetchSubscriptions();
     },
+    deletingSubscriptionModal(subscriptionID) {
+        this.subscriptionID = subscriptionID;
+        this.deletingSubscription = true;
+    },
+    deleteSubscription() {
+        if (this.subscriptionID) {
+            axios
+            .delete(`${this.$store.state.baseApiUrl}/subscriptions/${this.subscriptionID}`, 
+            {
+                params: {
+                    dealership: this.$store.state.loggedInUser.dealership,
+                },
+                headers: {
+                    'Authorization': `Bearer ${this.$store.state.token}`
+                },
+            })
+            .then(() => {
+                this.deletingSubscription = false;
+                this.fetchSubscriptions();
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+        }
+        else
+            console.log("Subscription ID is undefined");
+    },
+    toggleStatus(subscriptionID, subscriptionStatus) {
+        let status = subscriptionStatus ? 'Enabled' : 'Disabled'
+        axios
+            .put(`${this.$store.state.baseApiUrl}/subscriptions/${subscriptionID}`, 
+            {status},
+            {
+            params: {
+                dealership: this.$store.state.loggedInUser.dealership,
+            },
+            headers: {
+                'Authorization': `Bearer ${this.$store.state.token}`
+            },
+            })
+            .then(() => {
+                this.fetchSubscriptions();
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    },
     fetchSubscriptions() {
-      axios
-        .get(`${this.$store.state.baseApiUrl}/subscriptions`, {
-          params: {
-            dealership: this.$store.state.loggedInUser.dealership,
-          },
-          headers: {
-            'Authorization': `Bearer ${this.$store.state.token}`
-          }
-        })
-        .then((response) => {
-            console.log(response.data.payload);
-        })
-        .catch((error) => {
-            console.log(error);
-        });
+        let tempSubs = [];
+        axios
+            .get(`${this.$store.state.baseApiUrl}/subscriptions`, {
+            params: {
+                dealership: this.$store.state.loggedInUser.dealership,
+            },
+            headers: {
+                'Authorization': `Bearer ${this.$store.state.token}`
+            }
+            })
+            .then((response) => {
+                response.data.payload.forEach(sub => {
+                    let tempSubObj = {};
+                    tempSubObj._id = sub._id;
+                    tempSubObj.event_type = sub.event_type;
+                    tempSubObj.property = sub.property;
+                    tempSubObj.values = sub.values;
+                    tempSubObj.status = sub.status === 'Enabled' ? true : false;
+                    tempSubs.push(tempSubObj);       
+                });
+                this.items = tempSubs;
+            })
+            .catch((error) => {
+                console.log(error);
+            });
     },
   },
   mounted() {

@@ -17,8 +17,7 @@ const SubscriptionSchema = new mongoose.Schema({
     required: [true, 'Subscription must have an event type']
   },
   property: {
-    type: mongoose.Schema.ObjectId,
-    ref: 'Properties',
+    type: String,
   },
   values: [],
   status: {

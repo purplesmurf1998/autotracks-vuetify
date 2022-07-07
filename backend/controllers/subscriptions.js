@@ -2,7 +2,7 @@ const ErrorResponse = require('../utils/errorResponse');
 const asyncHandler = require('../middleware/async');
 const Subscriptions = require('../tables/Subscriptions');
 
-// @desc        Get all vehicles for a specific dealership
+// @desc        Get all subscriptions for a specific dealership
 // @route       GET /api/v1/subscriptions
 // @access      Private
 exports.getSubscriptions = asyncHandler(async (req, res, next) => {
@@ -26,18 +26,17 @@ exports.getSubscriptions = asyncHandler(async (req, res, next) => {
   });
 });
 
-// @desc        Update a specific vehicle
+// @desc        Update a specific subscription
 // @route       PUT /api/v1/subscriptions/:subscriptionId
 // @access      Private
 exports.updateSubscription = asyncHandler(async (req, res, next) => {
 
-  // try to update the vehicle
   const subscription = await Subscriptions.findByIdAndUpdate(req.params.subscriptionId, req.body, {
     runValidators: true,
     new: true
   });
 
-  // throw error if no vehicle returned
+  // throw error if no subscription returned
   if (!subscription) {
     return next(
       new ErrorResponse(`subscription with id ${req.params.subscriptionId} was unable to be updated.`, 404)
@@ -48,12 +47,12 @@ exports.updateSubscription = asyncHandler(async (req, res, next) => {
   res.status(200).json({ success: true, payload: subscription });
 });
 
-// @desc        Create a specific vehicle
+// @desc        Create a specific subscription
 // @route       POST /api/v1/subscriptions
 // @access      Private
 exports.createSubscription = asyncHandler(async (req, res, next) => {
 
-  // try to create the new vehicle
+  // try to create the new subscription
   const subscription = await Subscriptions.create(req.body);
 
   // return a success response
@@ -63,11 +62,11 @@ exports.createSubscription = asyncHandler(async (req, res, next) => {
   })
 });
 
-// @desc        Delete a specific vehicle
+// @desc        Delete a specific subscription
 // @route       DELETE /api/v1/subscriptions/:subscriptionId
 // @access      Private
 exports.deleteSubscription = asyncHandler(async (req, res, next) => {
-  // find vehicle property to delete
+  // find subscription property to delete
   await Subscriptions.findByIdAndDelete(req.params.subscriptionId);
 
   res.status(200).json({
