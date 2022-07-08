@@ -10,6 +10,7 @@ const {
   deleteVehicle,
   updateVehicle
 } = require('../controllers/vehicles');
+const { notifySubscribers } = require('../controllers/notify')
 
 // attach methods to the proper routes
 router.route('/')
@@ -18,7 +19,7 @@ router.route('/')
 
 router.route('/:vehicleId')
   .get(protect, getVehicle)
-  .put(protect, updateVehicle)
+  .put(protect, notifySubscribers, updateVehicle)
   .delete(protect, deleteVehicle);
 
 // export the router so it can be used in the server.js file
