@@ -49,13 +49,11 @@ export default {
 	}),
 	methods: {
 		save() {
-      console.log(this.vehicle);
+      this.vehicle.status = this.vehicleStatus;
 			axios
         .put(
           `${this.$store.state.baseApiUrl}/vehicles/${this.vehicle._id}`, 
-          {
-            status: this.vehicleStatus
-          },
+          this.vehicle,
           {  
             headers: {
               'Authorization': `Bearer ${this.$store.state.token}`
@@ -63,6 +61,7 @@ export default {
           }
         )
         .then((response) => {
+          console.log(response.data.payload);
           this.$emit("vehicle-updated", response.data.payload);
         })
         .catch((error) => {
