@@ -20,6 +20,10 @@ const SubscriptionSchema = new mongoose.Schema({
     type: String,
   },
   values: [],
+  select_all: {
+    type: Boolean,
+    default: false
+  },
   status: {
     type: String,
     enum: ['Enabled', 'Disabled'],

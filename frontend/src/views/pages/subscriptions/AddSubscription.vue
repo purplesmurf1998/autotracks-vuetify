@@ -149,6 +149,10 @@ export default {
         property: this.property,
         values: this.selectedValues,
       };
+
+      if (this.selectsAllValues)
+        subscription['select_all'] = true;
+        
       console.log(subscription);
 
       axios

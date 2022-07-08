@@ -61,7 +61,7 @@
     </v-dialog>
     <v-dialog max-width="500" v-model="deletingSubscription">
       <v-card>
-    <v-card-title class="text-h6"> Adding Subscription </v-card-title>
+    <v-card-title class="text-h6"> Deleting Subscription </v-card-title>
     <v-card-text>
       <h3>Are you sure you want to delete this subscription? </h3>
     </v-card-text>
@@ -182,7 +182,14 @@ export default {
                     tempSubObj._id = sub._id;
                     tempSubObj.event_type = sub.event_type;
                     tempSubObj.property = sub.property;
-                    tempSubObj.values = sub.values;
+                    if (sub.select_all)
+                        tempSubObj.values = 'All';
+                    else if (sub.values.length > 5) { //Displaying only the first 5 values
+                        sub.values.splice(5, sub.values.length - 5);
+                        tempSubObj.values = sub.values.join(', ') + ', etc..';
+                    }
+                    else
+                        tempSubObj.values = sub.values;
                     tempSubObj.status = sub.status === 'Enabled' ? true : false;
                     tempSubs.push(tempSubObj);       
                 });
