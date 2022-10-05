@@ -323,6 +323,7 @@ export default {
     },
     clearSelectedVehicle() {
       this.$router.replace({ query: {} });
+      this.fetchVehicles();
     },
     handlePagination(pagination) {
       this.results = pagination.itemsLength;
@@ -419,7 +420,6 @@ export default {
         case 2:
           tempItems = this.delivered;
       }
-
       if (this.filters.length == 0) {
         return tempItems;
       } else {

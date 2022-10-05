@@ -40,7 +40,6 @@ export default {
     vehicleStatus: null,
     availableStatus: [
       "IN_STOCK",
-      "ALERT",
       "SOLD",
       "PREPPING",
       "IN_REPAIR",
