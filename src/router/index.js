@@ -9,6 +9,7 @@ import Dashboard from "../views/Dashboard.vue";
 // import pages
 import Dealership from "../views/pages/dealership/Dealership.vue";
 import Users from "../views/pages/users/Users.vue";
+import Subscriptions from '../views/pages/subscriptions/Subscriptions.vue';
 import Properties from "../views/pages/properties/Properties";
 import Zones from "../views/pages/zones/Zones";
 import Roles from "../views/pages/roles/Roles";
@@ -50,6 +51,14 @@ const routes = [
         meta: {
           authRequired: true,
         },
+      },
+      {
+        path: 'subscriptions',
+        name: 'Subscriptions',
+        component: Subscriptions,
+        meta: {
+          authRequired: true
+        }
       },
       {
         path: "properties",
